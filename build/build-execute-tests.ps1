@@ -35,7 +35,7 @@ $xunitArguments = "..\src\Xrm.Framework.CI.Extensions.Tests\bin\Debug\Xrm.Framew
 	-output:$openCoverOutputFolder\Xrm.Framework.CI.Extensions.OpenCover.xml `
 	-target:"$xunitExe" `
 	-targetargs:$xunitArguments `
-	-filter:"+[Lema.*]* -[*.Test]*" `
+	-filter:"+[Xrm.Framework.CI.Extensions]* -[*.Test]*" `
 	-log:warn
 if($LASTEXITCODE -ne 0) { throw "BUILD STEP FAILED"; }
 
