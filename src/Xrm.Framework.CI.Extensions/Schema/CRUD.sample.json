@@ -1,0 +1,29 @@
+{
+  "schema": "https://github.com/malachyoc/xrm-ci-framework/tree/master/MSDYNV9/Xrm.Framework.CI/Xrm.Framework.CI.DataOperations/schema/crmdata.schema.json",
+  "schemaFormat": "http://json-schema.org/draft-07/schema#",
+  "schemaVersion": "1-0-0",
+  "entities": [
+    { /** LicenceGradeUpdate **/
+      "LogicalName": "contact",
+      "Id": "00000000-0ed7-e811-a30f-0050568a2d1a",
+      "Operation": "upsert",
+      "Attributes": [
+        {
+          "LogicalName": "customersizecode",
+          "Type": "OptionSetValue",
+          "Value": 1
+        },
+        {
+          "LogicalName": "firstname",
+          "Type": "String",
+          "Value": "Adrian"
+        },
+        {
+          "LogicalName": "lastname",
+          "Type": "String",
+          "Value": "Test Record"
+        }
+      ]
+    }
+  ]
+}
