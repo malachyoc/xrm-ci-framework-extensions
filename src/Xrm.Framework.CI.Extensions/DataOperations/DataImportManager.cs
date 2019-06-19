@@ -69,7 +69,10 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
         /// <param name="crmData"></param>
         private DataImportResult ProcessDataFile(JObject crmData)
         {
-            DataImportResult importResult = new DataImportResult();
+            DataImportResult importResult = new DataImportResult()
+            {
+                Success = true
+            };
 
             //Retrieve all entities 
             IList<JToken> entities = crmData.SelectToken("entities").ToList();
@@ -82,7 +85,7 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                 switch (crmEntity.Operation)
                 {
                     case JsonEntity.OperationEnum.Delete:
-                        DeleteEntity(crmEntity);
+                        DeleteEntity(crmEntity, importResult);
                         break;
 
                     case JsonEntity.OperationEnum.Upsert:
@@ -116,6 +119,7 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                         }
                 }
             }
+            
             return importResult;
         }
 
@@ -153,7 +157,7 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
 
         private void UpdateEntity(JsonEntity crmEntity, Entity delta, DataImportResult result = null)
         {
-            _logger.LogVerbose($"Updating {delta.LogicalName} entity with Id: '{delta.Id}'");
+            
             Entity fieldsToUpdate = null;
             switch (crmEntity.UpdateHint)
             {
@@ -177,9 +181,10 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
             {
                 if (fieldsToUpdate.Attributes.Count > 0)
                 {
+                    _logger.LogVerbose($"Updating {delta.LogicalName} entity with Id: '{delta.Id}'");
                     _crmService.Update(fieldsToUpdate);
                     if (result != null)
-                    {
+                    {   
                         result.RecordsUpdated++;
                     }
                 }
@@ -248,7 +253,7 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
         /// <returns></returns>
         private Entity RetrieveEntity(Entity crmEntity)
         {
-            _logger.LogInformation($"Retreiving {crmEntity.LogicalName} entity with id: '{crmEntity.Id}'");
+            //_logger.LogVerbose($"Retrieving {crmEntity.LogicalName} entity with id: '{crmEntity.Id}'");
 
             try
             {

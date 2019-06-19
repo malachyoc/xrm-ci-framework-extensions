@@ -4,6 +4,7 @@ using System.IO;
 using FakeXrmEasy;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
+using Microsoft.Xrm.Tooling.Connector;
 using Xrm.Framework.CI.Common.IntegrationTests;
 using Xrm.Framework.CI.Common.IntegrationTests.Logging;
 using Xrm.Framework.CI.Extensions.DataOperations;
@@ -14,13 +15,13 @@ namespace Xrm.Framework.CI.Extensions.Tests
     public class DataOperationTests
     {
         [Fact(Skip ="Not a unit test")]
+        //[Fact()]
         public void CrudIntegrationTest()
         {
             //Read sample file
-            IOrganizationService organisationService = new TestConnectionManager().CreateConnection();
-            DataImportManager importer = new DataImportManager(organisationService, new TestLogger());
-            var result = importer.ImportFile(@"..\..\..\Xrm.Framework.CI.Extensions\Schema\CRUD.sample.json");
-            
+            CrmServiceClient crmService = new CrmServiceClient("");
+            DataImportManager importer = new DataImportManager(crmService.OrganizationServiceProxy, new TestLogger());
+            var result = importer.ImportFile(@"");    
         }
 
         [Fact()]

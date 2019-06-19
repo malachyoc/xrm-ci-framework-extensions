@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Xrm.Framework.CI.Extensions [Branch: LOCALBRANCH (LOCALBUILD)] [Build: MANUAL] [Built By: DECISION\\moconnor]")]
+[assembly: AssemblyTitle("Xrm.Framework.CI.Extensions [Branch: LOCALBRANCH (LOCALBUILD)] [Build: MANUAL] [Built By: EPA\\MalachyOC]")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.7108.41805")]
-[assembly: AssemblyFileVersion("1.0.7108.41805")]
+[assembly: AssemblyVersion("1.0.7109.17420")]
+[assembly: AssemblyFileVersion("1.0.7109.17420")]
