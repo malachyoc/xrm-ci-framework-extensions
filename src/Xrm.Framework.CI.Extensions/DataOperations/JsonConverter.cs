@@ -61,7 +61,12 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                     deserialisedEntity.Operation = jObject.GetValue(nameof(JsonEntity.Operation)).ToObject<OperationEnum>();
                 }
 
-                if(jObject.ContainsKey(nameof(JsonEntity.Attributes)))
+                if (jObject.ContainsKey(nameof(JsonEntity.UpdateHint)))
+                {
+                    deserialisedEntity.UpdateHint = jObject.GetValue(nameof(JsonEntity.UpdateHint)).ToObject<UpdateHintEnum>();
+                }
+
+                if (jObject.ContainsKey(nameof(JsonEntity.Attributes)))
                 {
                     IList<JToken> attributes = jObject.SelectToken(nameof(JsonEntity.Attributes)).ToList();
                     

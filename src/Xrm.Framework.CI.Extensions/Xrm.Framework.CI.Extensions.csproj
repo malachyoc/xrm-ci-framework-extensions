@@ -75,7 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Schema\crmdata.schema.json" />
+    <EmbeddedResource Include="Schema\crmdata.schema.json" />
     <None Include="Schema\CRUD.sample.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

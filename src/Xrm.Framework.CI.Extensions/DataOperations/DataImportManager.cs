@@ -6,13 +6,9 @@ using System.IO;
 using System.Linq;
 using System.ServiceModel;
 using Xrm.Framework.CI.Common.Logging;
-using Xrm.Framework.CI.Extensions.Entities;
 
 namespace Xrm.Framework.CI.Extensions.DataOperations
-{
-    /// <summary>
-    /// The DataImporterManager accepts a JSON file containing CRM Data and applies the operations to the target environments
-    /// </summary>
+{ 
     public class DataImportManager
     {
         #region Internal Classes
@@ -91,7 +87,7 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                             {
                                 //only update if fields have changed
                                 var delta = existingEntity.Delta(crmEntity);
-                                UpdateEntity(delta, importResult);
+                                UpdateEntity(crmEntity, delta, importResult);
                             }
                             else
                             {
@@ -109,7 +105,7 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                             //Calculate the Update Delta
                             var existingEntity = RetrieveEntity(crmEntity);
                             var delta = existingEntity.Delta(crmEntity);
-                            UpdateEntity(delta, importResult);
+                            UpdateEntity(crmEntity, delta, importResult);
                             break;
                         }
                 }
@@ -149,15 +145,33 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
             }
         }
 
-        private void UpdateEntity(Entity crmEntity, DataImportResult result = null)
+        private void UpdateEntity(JsonEntity crmEntity, Entity delta, DataImportResult result = null)
         {
-            _logger.LogVerbose($"Updating {crmEntity.LogicalName} entity with Id: '{crmEntity.Id}'");
+            _logger.LogVerbose($"Updating {delta.LogicalName} entity with Id: '{delta.Id}'");
+            Entity fieldsToUpdate = null;
+            switch (crmEntity.UpdateHint)
+            {
+                //Update all the fields regardless of whether or not they have changed
+                case JsonEntity.UpdateHintEnum.AllFields:
+                    fieldsToUpdate = crmEntity.ToEntity<Entity>();
+                    break;
+
+                //If there is a change update all fields; otherwise update none
+                case JsonEntity.UpdateHintEnum.AllOrNothing:
+                    fieldsToUpdate = delta.Attributes.Count == 0 ? delta : crmEntity.ToEntity<Entity>();
+                    break;
+
+                //Only update fields that have changed
+                case JsonEntity.UpdateHintEnum.ChangedFields:
+                    fieldsToUpdate = delta;
+                    break;
+            }
 
             try
             {
-                if (crmEntity.Attributes.Count > 0)
+                if (fieldsToUpdate.Attributes.Count > 0)
                 {
-                    _crmService.Update(crmEntity.ToEntity<Entity>());
+                    _crmService.Update(fieldsToUpdate);
                     if (result != null)
                     {
                         result.RecordsUpdated++;
@@ -166,7 +180,7 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                 else
                 {
                     result.RecordsSkipped++;
-                    _logger.LogVerbose($"{crmEntity.LogicalName} entity with Id: '{crmEntity.Id} not updated'. No Attribute changes.");
+                    _logger.LogVerbose($"{fieldsToUpdate.LogicalName} entity with Id: '{fieldsToUpdate.Id} not updated'. No Attribute changes.");
                 }
             }
             catch (FaultException<OrganizationServiceFault> fex)
@@ -176,7 +190,7 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                     //Continue if object does not exist
                     //TODO: Behavior should be configurable
                     case (uint)0x80040217:
-                        _logger.LogWarning($"Could not update {crmEntity.LogicalName} entity with Id: '{crmEntity.Id}'. Object does not exist.");
+                        _logger.LogWarning($"Could not update {fieldsToUpdate.LogicalName} entity with Id: '{fieldsToUpdate.Id}'. Object does not exist.");
                         if (result != null)
                         {
                             result.RecordsSkipped++;
@@ -208,7 +222,7 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                     //Continue if key is duplicate
                     //TODO: Behavior should be configurable
                     case (uint)0x80040237:
-                        _logger.LogWarning($"Could not create {crmEntity.LogicalName} entity.  Record with id: '{crmEntity.Id}' alreadt exists.");
+                        _logger.LogWarning($"Could not create {crmEntity.LogicalName} entity.  Record with id: '{crmEntity.Id}' already exists.");
                         if (result != null)
                         {
                             result.RecordsSkipped++;

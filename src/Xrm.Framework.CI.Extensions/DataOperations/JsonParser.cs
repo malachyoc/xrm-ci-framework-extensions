@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Schema;
-using Newtonsoft.Json;
 
 namespace Xrm.Framework.CI.Extensions.DataOperations
 {
@@ -13,7 +12,7 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
     /// </summary>
     public static class JsonParser
     {
-        public const string JSON_CRMDATA_SCHEMA = "Xrm.Framework.CI.Common.Schema.crmdata.schema.json";
+        public const string JSON_CRMDATA_SCHEMA = "Xrm.Framework.CI.Extensions.Schema.crmdata.schema.json";
 
         /// <summary>
         /// Return JSON Schema from assembly

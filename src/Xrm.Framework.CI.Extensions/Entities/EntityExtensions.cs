@@ -2,9 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Xrm.Framework.CI.Extensions.DataOperations;
 
-namespace Xrm.Framework.CI.Extensions.Entities
+namespace Xrm.Framework.CI.Extensions.DataOperations
 {
     public static class EntityExtensions
     {

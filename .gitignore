@@ -303,3 +303,5 @@ BuildTools/Lib/xRMCIFramework/9.0.0/
 /MSDYNV9/Xrm.Framework.CI/Xrm.Framework.CI.PowerShell.Scripts/Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll
 /MSDYNV9/Xrm.Framework.CI/Xrm.Framework.CI.PowerShell.Scripts/Microsoft.IdentityModel.Clients.ActiveDirectory.dll
 /MSDYNV9/Xrm.Framework.CI/Xrm.Framework.CI.PowerShell.Scripts/Microsoft.Crm.Sdk.Proxy.dll
+
+/_build-output

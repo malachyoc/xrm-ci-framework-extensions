@@ -1,10 +1,5 @@
 ﻿using Microsoft.Xrm.Sdk;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xrm.Framework.CI.Extensions.DataOperations
 {
@@ -20,10 +15,23 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
             Delete = 3
         };
 
+        public enum UpdateHintEnum : int
+        {
+            ChangedFields = 0, //Default
+            AllOrNothing = 1,
+            AllFields = 2, 
+        };
+
         [JsonProperty("operation")]
         public OperationEnum Operation
         {
             get;set;
+        }
+
+        [JsonProperty("updatehint")]
+        public UpdateHintEnum UpdateHint
+        {
+            get; set;
         }
     }
 }
