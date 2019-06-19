@@ -1,5 +1,5 @@
 {
-  "schema": "https://github.com/malachyoc/xrm-ci-framework-extensions/tree/master/src/Xrm.Framework.CI.Extensions/Schema/crmdata.schema.json",
+  "schema": "https://github.com/malachyoc/xrm-ci-framework-extensions/_schema/crmdata.schema.json",
   "schemaFormat": "http://json-schema.org/draft-07/schema#",
   "schemaVersion": "1-0-0",
   "entities": [

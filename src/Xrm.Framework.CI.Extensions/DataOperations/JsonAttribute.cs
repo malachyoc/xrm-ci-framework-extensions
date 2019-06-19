@@ -33,7 +33,7 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                 return false;
 
             //If the objects are equals return true
-            if (_value.Equals(obj))
+            if (_value.Equals(item.Value))
                 return true;
 
             //I'm being lazy.  Probably more effienent to perform specific comparison based on Value type

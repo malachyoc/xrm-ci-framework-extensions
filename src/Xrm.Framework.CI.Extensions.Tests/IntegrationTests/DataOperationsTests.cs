@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using FakeXrmEasy;
 using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Query;
 using Xrm.Framework.CI.Common.IntegrationTests;
 using Xrm.Framework.CI.Common.IntegrationTests.Logging;
 using Xrm.Framework.CI.Extensions.DataOperations;
@@ -12,37 +13,95 @@ namespace Xrm.Framework.CI.Extensions.Tests
 {
     public class DataOperationTests
     {
-        [Fact(Skip = "Not a unit test")]
-        public void CrudTest_IntegrationTest()
+        [Fact(Skip ="Not a unit test")]
+        public void CrudIntegrationTest()
         {
             //Read sample file
             IOrganizationService organisationService = new TestConnectionManager().CreateConnection();
             DataImportManager importer = new DataImportManager(organisationService, new TestLogger());
-            var result = importer.ImportData(@"..\..\..\Xrm.Framework.CI.Extensions\Schema\CRUD.sample.json");
+            var result = importer.ImportFile(@"..\..\..\Xrm.Framework.CI.Extensions\Schema\CRUD.sample.json");
+            
         }
 
-        [Fact]
-        public void CrudTest()
+        [Fact()]
+        public void UpsertExistingTest()
         {
+            var existingGuid = Guid.Parse("00000000-0ed7-e811-a30f-0050568a2d1a");
             var fakedContext = new XrmFakedContext();
-            List<Entity> existingEntities = new List<Entity>();
-            Guid existingContactId = Guid.Parse("00000000-0ed7-e811-a30f-0050568a2d1a");
-            Entity existingContact = new Entity("contact", existingContactId);
-            existingContact.Attributes["fullname"] = "Malachy O'Connor";
+            var newContact = new Entity("contact", existingGuid);
+            newContact["fullname"] = "Malachy O'Connor";
 
-            existingEntities.Add(existingContact);
-            fakedContext.Initialize(existingEntities);
+            fakedContext.Initialize(new List<Entity>() {
+                newContact
+            });
 
             //Read sample file
-            IOrganizationService crmService = fakedContext.GetOrganizationService();
-            DataImportManager importer = new DataImportManager(crmService, new TestLogger());
-            var result = importer.ImportData(@"..\..\..\Xrm.Framework.CI.Extensions\Schema\CRUD.sample.json");
+            IOrganizationService organisationService = fakedContext.GetOrganizationService();
 
-            //Assert that the contact was created
-            Entity upsertedContact = crmService.Retrieve("contact", Guid.Parse("00000000-0ed7-e811-a30f-0050568a2d1a")
-                , new Microsoft.Xrm.Sdk.Query.ColumnSet(true));
+            //Update Data
+            DataImportManager importer = new DataImportManager(organisationService, new TestLogger());
+            var result = importer.ImportFile(@"..\..\..\Xrm.Framework.CI.Extensions\Schema\CRUD.sample.json");
 
-            Assert.Equal("Adrian Test", upsertedContact["fullname"]);
+            //Retrieve upserted record
+            Entity updatedContact = organisationService.Retrieve("contact", existingGuid, new ColumnSet(true));
+            Assert.Equal("Adrian Test", updatedContact["fullname"]);
+        }
+
+        [Fact(Skip = "FakeXrm not returning correct FaultCode")]
+        public void UpsertNewTest()
+        {
+            var existingGuid = Guid.Parse("00000000-0ed7-e811-a30f-0050568a2d1a");
+            var fakedContext = new XrmFakedContext();
+            var newContact = new Entity("contact", Guid.NewGuid());
+            newContact["fullname"] = "Malachy O'Connor";
+
+            fakedContext.Initialize(new List<Entity>() {
+                newContact
+            });
+
+            //Read sample file
+            IOrganizationService organisationService = fakedContext.GetOrganizationService();
+            DataImportManager importer = new DataImportManager(organisationService, new TestLogger());
+            var result = importer.ImportFile(@"..\..\..\Xrm.Framework.CI.Extensions\Schema\CRUD.sample.json");
+
+            //Retrieve created record   
+            Entity updatedContact = organisationService.Retrieve("contact", existingGuid, new ColumnSet(true));
+            Assert.Equal("Adrian Test", updatedContact["fullname"]);
+        }
+
+        [Fact(Skip ="FakeXrm not returning correct FaultCode")]
+        public void DeleteNonExistingTest()
+        {
+            var json = @"{
+                  'schema': 'https://github.com/malachyoc/xrm-ci-framework-extensions/_schema/crmdata.schema.json',
+                  'schemaFormat': 'http://json-schema.org/draft-07/schema#',
+                  'schemaVersion': '1-0-0',
+                  'entities': [
+                    { /** LicenceGradeUpdate **/
+                      'LogicalName': 'contact',
+                      'Id': '00000000-0ed7-e811-a30f-0050568a2d1a',
+                      'Operation': 'delete',
+                    }
+                  ]
+                }";
+
+            var existingGuid = Guid.Parse("00000000-0ed7-e811-a30f-0050568a2d1a");
+            var fakedContext = new XrmFakedContext();
+            var newContact = new Entity("contact", Guid.NewGuid());
+            newContact["fullname"] = "Malachy O'Connor";
+
+            fakedContext.Initialize(new List<Entity>() {
+                newContact
+            });
+
+            //Read sample file
+            IOrganizationService organisationService = fakedContext.GetOrganizationService();
+            DataImportManager importer = new DataImportManager(organisationService, new TestLogger());
+            var result = importer.ImportJson(json);
+
+            //Retrieve created record   
+            Entity updatedContact = organisationService.Retrieve("contact", existingGuid, new ColumnSet(true));
+
         }
     }
 }

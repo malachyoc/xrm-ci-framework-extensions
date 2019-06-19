@@ -47,11 +47,17 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
         #endregion
 
         #region Public Methods
-        public DataImportResult ImportData(string importDataPath)
+        public DataImportResult ImportFile(string importDataPath)
         {
             string fileContent = File.ReadAllText(importDataPath);
             JObject jobject = JsonParser.ParseCrmData(fileContent);
 
+            return ProcessDataFile(jobject);
+        }
+
+        public DataImportResult ImportJson(string jsonData)
+        {
+            JObject jobject = JsonParser.ParseCrmData(jsonData);
             return ProcessDataFile(jobject);
         }
         #endregion
