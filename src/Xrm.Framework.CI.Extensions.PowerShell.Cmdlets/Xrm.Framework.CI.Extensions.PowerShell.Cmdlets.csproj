@@ -78,10 +78,10 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="Xrm.Framework.CI.Common">
-      <HintPath>..\packages\XrmCIFramework.9.0.0.38\tools\Xrm.Framework.CI.Common.dll</HintPath>
+      <HintPath>..\packages\XrmCIFramework.9.0.0.39\tools\Xrm.Framework.CI.Common.dll</HintPath>
     </Reference>
     <Reference Include="Xrm.Framework.CI.PowerShell.Cmdlets">
-      <HintPath>..\packages\XrmCIFramework.9.0.0.38\tools\Xrm.Framework.CI.PowerShell.Cmdlets.dll</HintPath>
+      <HintPath>..\packages\XrmCIFramework.9.0.0.39\tools\Xrm.Framework.CI.PowerShell.Cmdlets.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
