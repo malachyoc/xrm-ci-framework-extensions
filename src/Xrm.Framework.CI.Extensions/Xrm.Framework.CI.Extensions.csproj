@@ -72,11 +72,19 @@
     <Compile Include="DataOperations\JsonParser.cs" />
     <Compile Include="Entities\EntityExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SolutionManagement\SolutiontManager.cs" />
+    <Compile Include="TypedEntities\Xrm.Typed.Attributes.cs" />
+    <Compile Include="TypedEntities\Xrm.Typed.Entities.cs" />
+    <Compile Include="TypedEntities\Xrm.Typed.OptionSets.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <EmbeddedResource Include="Schema\crmdata.schema.json" />
     <None Include="Schema\CRUD.sample.json" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="TypedEntities\filter.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
