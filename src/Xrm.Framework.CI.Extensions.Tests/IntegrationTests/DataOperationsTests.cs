@@ -14,13 +14,13 @@ namespace Xrm.Framework.CI.Extensions.Tests
     public class DataOperationTests
     {
         [Fact(Skip ="Not a unit test")]
-        public void CrudIntegrationTest()
+        //[Fact()]
+        public void ImportBUs()
         {
             //Read sample file
-            IOrganizationService organisationService = new TestConnectionManager().CreateConnection();
+            IOrganizationService organisationService = new TestConnectionManager().CreateConnection("CrmConnection_Import");
             DataImportManager importer = new DataImportManager(organisationService, new TestLogger());
-            var result = importer.ImportFile(@"..\..\..\Xrm.Framework.CI.Extensions\Schema\CRUD.sample.json");
-            
+            var result = importer.ImportFile(@"..\..\..\Xrm.Framework.CI.Extensions\Schema\test.json");
         }
 
         [Fact()]

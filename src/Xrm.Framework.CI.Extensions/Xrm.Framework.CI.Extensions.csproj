@@ -64,7 +64,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataOperations\DataExportManager.cs" />
     <Compile Include="DataOperations\DataImportManager.cs" />
+    <Compile Include="DataOperations\DataMapper.cs" />
     <Compile Include="DataOperations\JsonAttribute.cs" />
     <Compile Include="DataOperations\JsonConverter.cs" />
     <Compile Include="DataOperations\JsonEntity.cs" />

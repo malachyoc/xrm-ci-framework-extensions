@@ -20,10 +20,8 @@ namespace Xrm.Framework.CI.Common.IntegrationTests
 
         #region Methods
 
-        public IOrganizationService CreateConnection()
+        public IOrganizationService CreateConnection(String name = "CrmConnection")
         {
-            string name = "CrmConnection";
-
             string connectionString = GetConnectionString(name);
 
             XrmConnectionManager con
