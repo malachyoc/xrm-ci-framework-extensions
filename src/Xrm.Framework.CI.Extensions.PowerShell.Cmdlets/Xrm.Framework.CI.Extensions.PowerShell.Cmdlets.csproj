@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3FDAD675-1E37-4738-97B3-EC3DB6FC713B}</ProjectGuid>
+    <ProjectGuid>{0AF2D810-8E16-4AA1-B3F8-75EB17CF8A24}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Xrm.Framework.CI.Extensions</RootNamespace>
-    <AssemblyName>Xrm.Framework.CI.Extensions</AssemblyName>
+    <RootNamespace>Xrm.Framework.CI.Extensions.PowerShell.Cmdlets</RootNamespace>
+    <AssemblyName>Xrm.Framework.CI.Extensions.PowerShell.Cmdlets</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -33,26 +33,44 @@
   <ItemGroup>
     <Reference Include="Microsoft.Crm.Sdk.Proxy, Version=9.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CrmSdk.CoreAssemblies.9.0.2.12\lib\net462\Microsoft.Crm.Sdk.Proxy.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Xrm.Sdk, Version=9.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CrmSdk.CoreAssemblies.9.0.2.12\lib\net462\Microsoft.Xrm.Sdk.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Microsoft.Xrm.Sdk.Deployment, Version=9.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CrmSdk.Deployment.9.0.2.12\lib\net462\Microsoft.Xrm.Sdk.Deployment.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json.Schema, Version=3.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.Schema.3.0.11\lib\net45\Newtonsoft.Json.Schema.dll</HintPath>
+    <Reference Include="Microsoft.Xrm.Sdk.Workflow, Version=9.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CrmSdk.Workflow.9.0.2.12\lib\net462\Microsoft.Xrm.Sdk.Workflow.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.Activities" />
+    <Reference Include="System.Activities.Presentation" />
     <Reference Include="System.Core" />
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.DirectoryServices.AccountManagement" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.IdentityModel" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.PowerShell.5.ReferenceAssemblies.1.1.0\lib\net4\System.Management.Automation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Workflow.Activities" />
+    <Reference Include="System.Workflow.ComponentModel" />
+    <Reference Include="System.Workflow.Runtime" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -62,31 +80,32 @@
     <Reference Include="Xrm.Framework.CI.Common">
       <HintPath>..\packages\XrmCIFramework.9.0.0.39\tools\Xrm.Framework.CI.Common.dll</HintPath>
     </Reference>
+    <Reference Include="Xrm.Framework.CI.PowerShell.Cmdlets">
+      <HintPath>..\packages\XrmCIFramework.9.0.0.39\tools\Xrm.Framework.CI.PowerShell.Cmdlets.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataOperations\DataExportManager.cs" />
-    <Compile Include="DataOperations\DataImportManager.cs" />
-    <Compile Include="DataOperations\DataMapper.cs" />
-    <Compile Include="DataOperations\JsonAttribute.cs" />
-    <Compile Include="DataOperations\JsonConverter.cs" />
-    <Compile Include="DataOperations\JsonEntity.cs" />
-    <Compile Include="DataOperations\JsonEntityReference.cs" />
-    <Compile Include="DataOperations\JsonParser.cs" />
-    <Compile Include="Entities\EntityExtensions.cs" />
+    <Compile Include="ImportXrmDataCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SolutionManagement\SolutiontManager.cs" />
-    <Compile Include="TypedEntities\Xrm.Typed.Attributes.cs" />
-    <Compile Include="TypedEntities\Xrm.Typed.Entities.cs" />
-    <Compile Include="TypedEntities\Xrm.Typed.OptionSets.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-    <EmbeddedResource Include="Schema\crmdata.schema.json" />
-    <None Include="Schema\CRUD.sample.json" />
+    <None Include="Xrm.Framework.CI.Extensions.PowerShell.Cmdlets.psd1" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Content Include="TypedEntities\filter.xml" />
+    <ProjectReference Include="..\Xrm.Framework.CI.Extensions\Xrm.Framework.CI.Extensions.csproj">
+      <Project>{3fdad675-1e37-4738-97b3-ec3db6fc713b}</Project>
+      <Name>Xrm.Framework.CI.Extensions</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>Copy /Y $(TargetDir)\*.dll $(SolutionDir)\Xrm.Framework.CI.Extensions.PowerShell.Scripts\</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
 </Project>

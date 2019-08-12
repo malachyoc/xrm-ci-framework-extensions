@@ -13,6 +13,7 @@ $buildFolder = (Resolve-Path ..\src).Path
 #Tag all releaseable binaries with version and build info
 & .\update_assemblyinfo.ps1 $buildFolder\Xrm.Framework.CI.Extensions\Properties\AssemblyInfo.cs Xrm.Framework.CI.Extensions
 & .\update_assemblyinfo.ps1 $buildFolder\Xrm.Framework.CI.Extensions.Tests\Properties\AssemblyInfo.cs Xrm.Framework.CI.Extensions.Tests
+& .\update_assemblyinfo.ps1 $buildFolder\Xrm.Framework.CI.Extensions.PowerShell.Cmdlets\Properties\AssemblyInfo.cs Xrm.Framework.CI.Extensions.PowerShell.Cmdlets
 
 #Restore NuGet Packages
 LogMessage "Restoring NuGet Packages for: $buildFolder\Xrm.Framework.CI.Extensions.sln"

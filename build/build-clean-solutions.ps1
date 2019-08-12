@@ -14,12 +14,9 @@ $buildFolder = (Resolve-Path ..\src).Path
 #delete all bin and obj folders
 LogMessage "Cleaning Solutions"
 Get-ChildItem $("$buildFolder") -Recurse | Where-Object {$_.PSIsContainer -and $_.name -match '^obj$|^bin$'  -and $_.FullName -notmatch 'package'} | Remove-Item -Force -Recurse
+Get-ChildItem $("$buildFolder") -Recurse | Where-Object {$_.FullName -notmatch 'package' -and $_.name -like '*.dll' } | Remove-Item -Force -Recurse
 
 #Execute MSBUILD
 & $msbuild "$buildFolder\Xrm.Framework.CI.Extensions.sln" /t:Clean /verbosity:quiet
 if($LASTEXITCODE -ne 0) { throw "BUILD STEP FAILED"; }
-
-#Tag all releaseable binaries with version and build info
-& .\update_assemblyinfo.ps1 $buildFolder\Xrm.Framework.CI.Extensions\Properties\AssemblyInfo.cs Xrm.Framework.CI.Extensions
-& .\update_assemblyinfo.ps1 $buildFolder\Xrm.Framework.CI.Extensions.Tests\Properties\AssemblyInfo.cs Xrm.Framework.CI.Extensions.Tests
 
