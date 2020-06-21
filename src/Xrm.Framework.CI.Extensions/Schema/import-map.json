@@ -1,0 +1,22 @@
+{
+  "schema": "https://github.com/malachyoc/xrm-ci-framework-extensions/_schema/crmdata.schema.json",
+  "schemaFormat": "http://json-schema.org/draft-07/schema#",
+  "schemaVersion": "1-0-0",
+  "mappings": [
+	{
+		/* Map Root BU to known Guid */
+		'EntityLogicalName': 'businessunit'
+		, 'TargetId': null
+		, 'TargetQuery': '<fetch top="1" >
+			  <entity name="businessunit" >
+				<attribute name="businessunitid" alias="id" />
+				<filter type="and" >
+				  <condition attribute="parentbusinessunitid" operator="null" />
+				</filter>
+			  </entity>
+			</fetch>'
+		, 'SourceQuery': null
+		, 'SourceId': '11111111-0000-0000-0000-aaaaaaaaaaaa'		
+	}
+  ]
+}

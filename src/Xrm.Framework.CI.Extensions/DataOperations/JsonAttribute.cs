@@ -120,6 +120,17 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                         , Value = attKvp.Value
                     };
 
+                case nameof(BooleanManagedProperty):
+                    {
+                        var property = (BooleanManagedProperty)attKvp.Value;
+                        return new JsonAttribute()
+                        {
+                            LogicalName = attKvp.Key
+                            , Type = nameof(BooleanManagedProperty)
+                            , Value = property.Value
+                        };
+                    }
+
                 default:
                     throw new NotImplementedException($"Cannot convert attributes of type: {attKvp.Value.GetType().FullName}");
             }

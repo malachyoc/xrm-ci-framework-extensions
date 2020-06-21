@@ -1,7 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
   "title": "JSON Schema for crm data files",
-  "description": "schema for TCorpIM Transaction File",
   "self": {
     "name": "CrmData",
     "format": "http://json-schema.org/draft-07/schema#",
@@ -24,23 +23,59 @@
       "type": "array",
       "additionalItems": false,
       "items": {
-
-        "$ref": "#/definitions/EntityTarget"
-
+        "oneOf": [
+          { "$ref": "#/definitions/SdkMessage" },
+          { "$ref": "#/definitions/EntityTarget" }
+        ]
       }
     },
     "mappings": {
       "type": "array",
       "additionalItems": false,
       "items": {
-
         "$ref": "#/definitions/EntityMapping"
-
       }
+    },
+    "additionalProperties": false
+  },
+  "sdkmessages": {
+    "DeleteAttributeRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "SdkMessage": {
+          "type": "string",
+          "enum": [ "DeleteAttributeRequest" ]
+        }
+      },
+      "required": [ "LogicalName" ]
+    },
+    "SetStateRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "SdkMessage": {
+          "type": "string",
+          "enum": [ "SetStateRequest" ]
+        },
+        "Target": { "$ref": "#/definitions/Guid" },
+        "LogicalName": {
+          "type": "string"
+        },
+        "statecode": { "type": "number" },
+        "statuscode": { "type": "number" }
+      },
+      "required": [ "LogicalName" ]
     }
   },
-  "additionalProperties": false,
   "definitions": {
+    "SdkMessage": {
+      "oneOf": [
+        { "$ref": "#/sdkmessages/DeleteAttributeRequest" },
+        { "$ref": "#/sdkmessages/SetStateRequest" }
+      ],
+      "required": [ "SdkMessage" ]
+    },
     "EntityTarget": {
       "type": "object",
       "additionalProperties": false,
@@ -54,11 +89,10 @@
         "Attributes": {},
         "Operation": {
           "type": "string",
-          "enum": [ "delete", "create", "update", "upsert" ]
+          "enum": [ "delete", "create", "update", "upsert", "associate" ]
         }
-
       },
-      "required": [ "Id", "LogicalName" ]
+      "required": [ "LogicalName" ]
     },
     "EntityMapping": {
       "type": "object",
@@ -84,9 +118,8 @@
           "type": "string",
           "enum": [ "delete", "create", "update", "upsert" ]
         }
-
       },
-        "required": [ "EntityLogicalName" ]
+      "required": [ "EntityLogicalName" ]
     },
     "Guid": {
       "type ": "string",

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xrm.Sdk;
+﻿using Microsoft.Crm.Sdk.Messages;
+using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Query;
 using Newtonsoft.Json;
@@ -37,6 +38,7 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
         private ILogger _logger;
         private JsonSerializer _jsonSerializer;
         private DataMapper _dataMapper;
+        private MetadataManager _metadataManager;
         
         public DataExportManager(IOrganizationService crmService, ILogger logger)
         {
@@ -44,7 +46,29 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
             _logger = logger;
             _jsonSerializer = new JsonSerializer();
             _jsonSerializer.Converters.Add(new CrmEntityConverter());
-            _dataMapper = new DataMapper(crmService, logger);
+            _metadataManager = new MetadataManager(crmService, logger);
+            _dataMapper = new DataMapper(crmService, _metadataManager, logger);
+
+            _logger.LogInformation($"Connected to: {this.ConnectionDetails}");
+        }
+
+        string _connectionDetails;
+        private string ConnectionDetails
+        {
+            get
+            {
+                if(string.IsNullOrWhiteSpace(_connectionDetails))
+                {
+                    var response = _crmService.RetrieveMultiple(new QueryExpression("organization")
+                    { 
+                        NoLock = true
+                        , ColumnSet = new ColumnSet(new string[] { "name" })
+                    });
+
+                    _connectionDetails = (string)response.Entities.First().Attributes["name"];
+                }
+                return _connectionDetails;
+            }
         }
         #endregion
 
@@ -84,7 +108,7 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
             }
         }
 
-        private DataExportResult ExportToStream(string fetchQuery, StreamWriter outputStream)
+        private DataExportResult ExportToStream(string rawFetchQuery, StreamWriter outputStream)
         {
             JsonTextWriter writer = new JsonTextWriter(outputStream);
             writer.Formatting = Formatting.Indented;
@@ -97,6 +121,10 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
             writer.WriteValue("1-0-0");
 
             //Execute the fetch query
+            _logger.LogVerbose($"Linerise Fetch Query");
+            string fetchQuery = FetchXmlManager.LineriseFetchXml(rawFetchQuery);
+
+            _logger.LogVerbose("Executing Fetch Query");
             var retrieveMultipleRequest = new RetrieveMultipleRequest();
             retrieveMultipleRequest.Query = new FetchExpression(fetchQuery);
 
@@ -106,7 +134,9 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
             writer.WritePropertyName("entities");
             writer.WriteStartArray();
 
+
             //Step 2:Page through
+            _logger.LogVerbose("Processing Results");
             do
             {
                 List<JsonEntity> additionalEntities = 
@@ -121,14 +151,14 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                     _jsonSerializer.Serialize(writer, entity);
                 }
                 writer.Flush();
-
             }
+
             while (queryResponse.EntityCollection.MoreRecords == true);
             writer.WriteEndArray();
             writer.WriteEndObject();
 
+            results.Success = true;
             return results;
-
         }
         #endregion
 
@@ -139,6 +169,7 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
 
             //2. Process the entity
             _dataMapper.ProcessEntity(jsonEntity);
+            _metadataManager.ProcessEntity(jsonEntity);
 
             return jsonEntity;
         }

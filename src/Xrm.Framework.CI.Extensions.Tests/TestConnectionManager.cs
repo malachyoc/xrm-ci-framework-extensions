@@ -20,7 +20,7 @@ namespace Xrm.Framework.CI.Common.IntegrationTests
 
         #region Methods
 
-        public IOrganizationService CreateConnection(String name = "CrmConnection")
+        public IOrganizationService CreateConnection(String name = "Connection.D365")
         {
             string connectionString = GetConnectionString(name);
 
@@ -39,7 +39,6 @@ namespace Xrm.Framework.CI.Common.IntegrationTests
                 throw new Exception($"connection with {name} was not found");
             return value;
         }
-
         #endregion
     }
 }

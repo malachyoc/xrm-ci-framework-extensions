@@ -11,16 +11,16 @@ using Xunit;
 
 namespace Xrm.Framework.CI.Extensions.Tests
 {
-    public class DataOperationTests
+    public class DataOperationTests 
     {
         [Fact(Skip ="Not a unit test")]
-        //[Fact()]
-        public void ImportBUs()
+        public void ImportConfiguration()
         {
             //Read sample file
-            IOrganizationService organisationService = new TestConnectionManager().CreateConnection("CrmConnection_Import");
+            IOrganizationService organisationService = new TestConnectionManager().CreateConnection("Connection.D365.Uat");
             DataImportManager importer = new DataImportManager(organisationService, new TestLogger());
-            var result = importer.ImportFile(@"..\..\..\Xrm.Framework.CI.Extensions\Schema\test.json");
+            importer.LoadDataMappings(@"..solutions\environments\import-map.json");
+            var result = importer.ImportFile(@"..\crm-platform\src\solutions\environments\8. systemusers-uat.json");
         }
 
         [Fact()]

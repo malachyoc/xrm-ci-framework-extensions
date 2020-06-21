@@ -1,0 +1,382 @@
+{
+  "schema": "https://github.com/malachyoc/xrm-ci-framework-extensions/_schema/crmdata.schema.json",
+  "schemaFormat": "http://json-schema.org/draft-07/schema#",
+  "schemaVersion": "1-0-0",
+  "entities": [
+    {
+      "LogicalName": "team",
+      "Id": "2955f98c-fcae-e911-a82a-000d3ab00a5a",
+      "Attributes": [
+        {
+          "LogicalName": "businessunitid",
+          "Type": "EntityReference",
+          "Value": {
+            "Id": "11111111-0000-0000-0000-aaaaaaaaaaaa",
+            "LogicalName": "businessunit"
+          }
+        },
+        {
+          "LogicalName": "name",
+          "Type": "String",
+          "Value": "Swyft Assessment Team"
+        },
+        {
+          "LogicalName": "teamid",
+          "Type": "Guid",
+          "Value": "2955f98c-fcae-e911-a82a-000d3ab00a5a"
+        }
+      ]
+    },
+    {
+      "LogicalName": "team",
+      "Id": "2f0cfcaa-84af-e911-a82a-000d3ab00a5a",
+      "Attributes": [
+        {
+          "LogicalName": "businessunitid",
+          "Type": "EntityReference",
+          "Value": {
+            "Id": "11111111-0000-0000-0000-aaaaaaaaaaaa",
+            "LogicalName": "businessunit"
+          }
+        },
+        {
+          "LogicalName": "name",
+          "Type": "String",
+          "Value": "Pricing Queue"
+        },
+        {
+          "LogicalName": "teamid",
+          "Type": "Guid",
+          "Value": "2f0cfcaa-84af-e911-a82a-000d3ab00a5a"
+        }
+      ]
+    },
+    {
+      "LogicalName": "team",
+      "Id": "e7ecac11-73b3-e911-a827-000d3ab017ae",
+      "Attributes": [
+        {
+          "LogicalName": "businessunitid",
+          "Type": "EntityReference",
+          "Value": {
+            "Id": "11111111-0000-0000-0000-aaaaaaaaaaaa",
+            "LogicalName": "businessunit"
+          }
+        },
+        {
+          "LogicalName": "name",
+          "Type": "String",
+          "Value": "Office Admins"
+        },
+        {
+          "LogicalName": "teamid",
+          "Type": "Guid",
+          "Value": "e7ecac11-73b3-e911-a827-000d3ab017ae"
+        }
+      ]
+    },
+    {
+      "LogicalName": "team",
+      "Id": "2ea3b21d-73b3-e911-a827-000d3ab017ae",
+      "Attributes": [
+        {
+          "LogicalName": "businessunitid",
+          "Type": "EntityReference",
+          "Value": {
+            "Id": "11111111-0000-0000-0000-aaaaaaaaaaaa",
+            "LogicalName": "businessunit"
+          }
+        },
+        {
+          "LogicalName": "name",
+          "Type": "String",
+          "Value": "Escalations Managers"
+        },
+        {
+          "LogicalName": "teamid",
+          "Type": "Guid",
+          "Value": "2ea3b21d-73b3-e911-a827-000d3ab017ae"
+        }
+      ]
+    },
+    {
+      "LogicalName": "team",
+      "Id": "fdd3cd58-9bd8-e911-a828-000d3ab017ae",
+      "Attributes": [
+        {
+          "LogicalName": "businessunitid",
+          "Type": "EntityReference",
+          "Value": {
+            "Id": "f7d3cd58-9bd8-e911-a828-000d3ab017ae",
+            "LogicalName": "businessunit"
+          }
+        },
+        {
+          "LogicalName": "description",
+          "Type": "String",
+          "Value": "Default team for the parent business unit. The name and membership for default team are inherited from their parent business unit."
+        },
+        {
+          "LogicalName": "name",
+          "Type": "String",
+          "Value": "Heating Control"
+        },
+        {
+          "LogicalName": "teamid",
+          "Type": "Guid",
+          "Value": "fdd3cd58-9bd8-e911-a828-000d3ab017ae"
+        }
+      ]
+    },
+    {
+      "LogicalName": "team",
+      "Id": "ab4fd670-9bd8-e911-a828-000d3ab017ae",
+      "Attributes": [
+        {
+          "LogicalName": "businessunitid",
+          "Type": "EntityReference",
+          "Value": {
+            "Id": "aa4fd670-9bd8-e911-a828-000d3ab017ae",
+            "LogicalName": "businessunit"
+          }
+        },
+        {
+          "LogicalName": "description",
+          "Type": "String",
+          "Value": "Default team for the parent business unit. The name and membership for default team are inherited from their parent business unit."
+        },
+        {
+          "LogicalName": "name",
+          "Type": "String",
+          "Value": "Boilers"
+        },
+        {
+          "LogicalName": "teamid",
+          "Type": "Guid",
+          "Value": "ab4fd670-9bd8-e911-a828-000d3ab017ae"
+        }
+      ]
+    },
+    {
+      "LogicalName": "team",
+      "Id": "ab500615-b4ba-e911-a82a-000d3ab03e67",
+      "Attributes": [
+        {
+          "LogicalName": "businessunitid",
+          "Type": "EntityReference",
+          "Value": {
+            "Id": "11111111-0000-0000-0000-aaaaaaaaaaaa",
+            "LogicalName": "businessunit"
+          }
+        },
+        {
+          "LogicalName": "name",
+          "Type": "String",
+          "Value": "Project Co-Ordination Queue"
+        },
+        {
+          "LogicalName": "teamid",
+          "Type": "Guid",
+          "Value": "ab500615-b4ba-e911-a82a-000d3ab03e67"
+        }
+      ]
+    },
+    {
+      "LogicalName": "team",
+      "Id": "80d46b32-18bd-e911-a82a-000d3ab03e67",
+      "Attributes": [
+        {
+          "LogicalName": "businessunitid",
+          "Type": "EntityReference",
+          "Value": {
+            "Id": "11111111-0000-0000-0000-aaaaaaaaaaaa",
+            "LogicalName": "businessunit"
+          }
+        },
+        {
+          "LogicalName": "name",
+          "Type": "String",
+          "Value": "Quality Queue"
+        },
+        {
+          "LogicalName": "teamid",
+          "Type": "Guid",
+          "Value": "80d46b32-18bd-e911-a82a-000d3ab03e67"
+        }
+      ]
+    },
+    {
+      "LogicalName": "team",
+      "Id": "5f151805-5ba2-e911-a826-000d3ab08ce9",
+      "Attributes": [
+        {
+          "LogicalName": "businessunitid",
+          "Type": "EntityReference",
+          "Value": {
+            "Id": "aa4fd670-9bd8-e911-a828-000d3ab017ae",
+            "LogicalName": "businessunit"
+          }
+        },
+        {
+          "LogicalName": "name",
+          "Type": "String",
+          "Value": "Boilers - Sales Queue"
+        },
+        {
+          "LogicalName": "teamid",
+          "Type": "Guid",
+          "Value": "5f151805-5ba2-e911-a826-000d3ab08ce9"
+        }
+      ]
+    },
+    {
+      "LogicalName": "team",
+      "Id": "a9e8ec05-7ebf-e911-a830-000d3ab09981",
+      "Attributes": [
+        {
+          "LogicalName": "businessunitid",
+          "Type": "EntityReference",
+          "Value": {
+            "Id": "f7d3cd58-9bd8-e911-a828-000d3ab017ae",
+            "LogicalName": "businessunit"
+          }
+        },
+        {
+          "LogicalName": "name",
+          "Type": "String",
+          "Value": "Heating Controls - Sales Queue"
+        },
+        {
+          "LogicalName": "teamid",
+          "Type": "Guid",
+          "Value": "a9e8ec05-7ebf-e911-a830-000d3ab09981"
+        }
+      ]
+    },
+    {
+      "LogicalName": "team",
+      "Id": "43d7bd5f-49a9-e911-a82f-000d3ab09e91",
+      "Attributes": [
+        {
+          "LogicalName": "businessunitid",
+          "Type": "EntityReference",
+          "Value": {
+            "Id": "aa4fd670-9bd8-e911-a828-000d3ab017ae",
+            "LogicalName": "businessunit"
+          }
+        },
+        {
+          "LogicalName": "name",
+          "Type": "String",
+          "Value": "Boilers - Schedule Team"
+        },
+        {
+          "LogicalName": "teamid",
+          "Type": "Guid",
+          "Value": "43d7bd5f-49a9-e911-a82f-000d3ab09e91"
+        }
+      ]
+    },
+    {
+      "LogicalName": "team",
+      "Id": "500163ea-cc90-e911-a9a5-000d3ab4cccd",
+      "Attributes": [
+        {
+          "LogicalName": "businessunitid",
+          "Type": "EntityReference",
+          "Value": {
+            "Id": "11111111-0000-0000-0000-aaaaaaaaaaaa",
+            "LogicalName": "businessunit"
+          }
+        },
+        {
+          "LogicalName": "name",
+          "Type": "String",
+          "Value": "Grants Department Queue"
+        },
+        {
+          "LogicalName": "teamid",
+          "Type": "Guid",
+          "Value": "500163ea-cc90-e911-a9a5-000d3ab4cccd"
+        }
+      ]
+    },
+    {
+      "LogicalName": "team",
+      "Id": "888c54f6-cc90-e911-a9a5-000d3ab4cccd",
+      "Attributes": [
+        {
+          "LogicalName": "businessunitid",
+          "Type": "EntityReference",
+          "Value": {
+            "Id": "11111111-0000-0000-0000-aaaaaaaaaaaa",
+            "LogicalName": "businessunit"
+          }
+        },
+        {
+          "LogicalName": "name",
+          "Type": "String",
+          "Value": "Heating Controls - Schedule Team"
+        },
+        {
+          "LogicalName": "teamid",
+          "Type": "Guid",
+          "Value": "888c54f6-cc90-e911-a9a5-000d3ab4cccd"
+        }
+      ]
+    },
+    {
+      "LogicalName": "team",
+      "Id": "ba444cfc-cc90-e911-a9a5-000d3ab4cccd",
+      "Attributes": [
+        {
+          "LogicalName": "businessunitid",
+          "Type": "EntityReference",
+          "Value": {
+            "Id": "11111111-0000-0000-0000-aaaaaaaaaaaa",
+            "LogicalName": "businessunit"
+          }
+        },
+        {
+          "LogicalName": "name",
+          "Type": "String",
+          "Value": "Finance Queue"
+        },
+        {
+          "LogicalName": "teamid",
+          "Type": "Guid",
+          "Value": "ba444cfc-cc90-e911-a9a5-000d3ab4cccd"
+        }
+      ]
+    },
+    {
+      "LogicalName": "team",
+      "Id": "0b03c67b-9e84-e911-a895-000d3ab6bfff",
+      "Attributes": [
+        {
+          "LogicalName": "businessunitid",
+          "Type": "EntityReference",
+          "Value": {
+            "Id": "11111111-0000-0000-0000-aaaaaaaaaaaa",
+            "LogicalName": "businessunit"
+          }
+        },
+        {
+          "LogicalName": "description",
+          "Type": "String",
+          "Value": "Default team for the parent business unit. The name and membership for default team are inherited from their parent business unit."
+        },
+        {
+          "LogicalName": "name",
+          "Type": "String",
+          "Value": "swyftenergy"
+        },
+        {
+          "LogicalName": "teamid",
+          "Type": "Guid",
+          "Value": "0b03c67b-9e84-e911-a895-000d3ab6bfff"
+        }
+      ]
+    }
+  ]
+}

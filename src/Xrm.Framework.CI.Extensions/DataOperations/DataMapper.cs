@@ -24,15 +24,17 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
 
         private IOrganizationService _crmService;
         private ILogger _logger;
+        private MetadataManager _metadataManager;
 
         Dictionary<string, Dictionary<Guid, Guid>> _dataMappings;
 
-        public DataMapper(IOrganizationService crmService, ILogger logger)
+        public DataMapper(IOrganizationService crmService, MetadataManager metadataManager, ILogger logger)
         {
             _crmService = crmService;
             _logger = logger;
 
             _dataMappings = new Dictionary<string, Dictionary<Guid, Guid>>();
+            _metadataManager = metadataManager;
         }
 
         public void LoadMappings(JObject crmData)
@@ -64,7 +66,7 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                 }
 
                 //Check if we need to dynamically load TargetId
-                if (mapping.TargetId== null)
+                if (mapping.TargetId == null)
                 {
                     //Resolve the source id from the fetch query
                     var retrieveMultipleRequest = new RetrieveMultipleRequest();
@@ -106,33 +108,68 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
             Guid? newPk = GetMappedValue(entity.LogicalName, entity.Id);
             String recordKey = String.Empty;
 
-            //Check if we need to map any attribures
-            foreach(KeyValuePair<string, object> attribute in entity.Attributes)
+            var metadata = _metadataManager.RetrieveEntityMetadata(entity.LogicalName);
+
+            if (metadata.IsIntersect == false)
             {
-                //There should only be one Guid per record.  Assume it is the PK
-                if(attribute.Value.GetType() == typeof(Guid) && newPk != null)
+                //Check if we need to map any attribures
+                foreach (KeyValuePair<string, object> attribute in entity.Attributes)
                 {
-                    recordKey = attribute.Key;
-                }
-
-                //If the field is an entity reference it may need to be mapped
-                if (attribute.Value.GetType() == typeof(EntityReference))
-                {
-                    var entityReference = (EntityReference)attribute.Value;
-                    Guid? newReferenceValue = GetMappedValue(entityReference.LogicalName, entityReference.Id);
-
-                    if(newReferenceValue != null)
+                    if (attribute.Value.GetType() == typeof(Guid))
                     {
-                        entityReference.Id = newReferenceValue.Value;
+                        //Check if attribute is PK
+                        if (attribute.Key == metadata.PrimaryIdAttribute && newPk != null)
+                        {
+                            recordKey = attribute.Key;
+                        }
+                    }
+
+                    //If the field is an entity reference it may need to be mapped
+                    else if (attribute.Value.GetType() == typeof(EntityReference))
+                    {
+                        var entityReference = (EntityReference)attribute.Value;
+                        Guid? newReferenceValue = GetMappedValue(entityReference.LogicalName, entityReference.Id);
+
+                        if (newReferenceValue != null)
+                        {
+                            entityReference.Id = newReferenceValue.Value;
+                        }
                     }
                 }
-            }
 
-            //Update the Pk if requried
-            if(newPk != null)
+                //Update the Pk if requried
+                if (newPk != null)
+                {
+                    entity.Id = newPk.Value;
+
+                    if (!String.IsNullOrWhiteSpace(recordKey))
+                        entity.Attributes[recordKey] = newPk.Value;
+                }
+            }
+            else
             {
-                entity.Attributes[recordKey] = newPk.Value;
-                entity.Id = newPk.Value;
+                //For Many-to-many check if target attributes need to be mapped
+                var manyToManyRelationship = metadata.ManyToManyRelationships.FirstOrDefault();
+
+                if (entity.Attributes.ContainsKey(manyToManyRelationship.Entity1IntersectAttribute))
+                {
+                    Guid sourceKey = (Guid)entity.Attributes[manyToManyRelationship.Entity1IntersectAttribute];
+                    Guid? mappedGuid = GetMappedValue(manyToManyRelationship.Entity1LogicalName, sourceKey);
+                    if (mappedGuid != null)
+                    {
+                        entity.Attributes[manyToManyRelationship.Entity1IntersectAttribute] = mappedGuid.Value;
+                    }
+                }
+
+                if (entity.Attributes.ContainsKey(manyToManyRelationship.Entity2IntersectAttribute))
+                {
+                    Guid sourceKey = (Guid)entity.Attributes[manyToManyRelationship.Entity2IntersectAttribute];
+                    Guid? mappedGuid = GetMappedValue(manyToManyRelationship.Entity2LogicalName, sourceKey);
+                    if (mappedGuid != null)
+                    {
+                        entity.Attributes[manyToManyRelationship.Entity2IntersectAttribute] = mappedGuid.Value;
+                    }
+                }
             }
         }
 

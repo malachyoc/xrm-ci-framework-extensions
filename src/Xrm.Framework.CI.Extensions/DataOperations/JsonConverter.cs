@@ -23,12 +23,19 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
         /// <param name="serializer"></param>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            Entity entity = (Entity)value;
+            JsonEntity entity = (JsonEntity)value;
             writer.WriteStartObject();
             writer.WritePropertyName(nameof(entity.LogicalName));
             writer.WriteValue(entity.LogicalName);
-            writer.WritePropertyName(nameof(entity.Id));
-            writer.WriteValue(entity.Id);
+
+            if (entity.Id != Guid.Empty)
+            {
+                writer.WritePropertyName(nameof(entity.Id));
+                writer.WriteValue(entity.Id);
+            }
+
+            writer.WritePropertyName(nameof(entity.Operation));
+            writer.WriteValue(entity.Operation.ToString().ToLower());
 
             writer.WritePropertyName(nameof(entity.Attributes));
             writer.WriteStartArray();
@@ -55,7 +62,12 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
 
                 JObject jObject = JObject.Load(reader);
                 deserialisedEntity.LogicalName = (string)jObject.GetValue(nameof(Entity.LogicalName));
-                deserialisedEntity.Id = (Guid)jObject.GetValue(nameof(Entity.Id));
+
+                if(jObject.ContainsKey(nameof(Entity.Id)))
+                {
+                    deserialisedEntity.Id = (Guid)jObject.GetValue(nameof(Entity.Id));
+                }
+                
                 if(jObject.ContainsKey(nameof(JsonEntity.Operation)))
                 {
                     deserialisedEntity.Operation = jObject.GetValue(nameof(JsonEntity.Operation)).ToObject<OperationEnum>();

@@ -1,11 +1,16 @@
-﻿using Microsoft.Xrm.Sdk;
+﻿using Microsoft.Crm.Sdk.Messages;
+using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Messages;
+using Microsoft.Xrm.Sdk.Query;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.ServiceModel;
 using Xrm.Framework.CI.Common.Logging;
+using Xrm.Framework.CI.Extensions.SdkMessages;
 
 namespace Xrm.Framework.CI.Extensions.DataOperations
 { 
@@ -21,6 +26,7 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
             public int RecordsUpdated { get; set; }
             public int RecordsDeleted { get; set; }
             public int RecordsSkipped { get; set; }
+            public int RecordsFailed { get; set; }
             #endregion
 
             #region Constructor
@@ -35,7 +41,10 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
         #region Member Variables and Constructors
         private IOrganizationService _crmService;
         private ILogger _logger;
+
         private JsonSerializer _jsonSerializer;
+        private DataMapper _dataMapper;
+        private MetadataManager _metadataManager;
 
         public DataImportManager(IOrganizationService crmService, ILogger logger)
         {
@@ -43,10 +52,22 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
             _logger = logger;
             _jsonSerializer = new JsonSerializer();
             _jsonSerializer.Converters.Add(new CrmEntityConverter());
+            _metadataManager = new MetadataManager(crmService, logger);
+            _dataMapper = new DataMapper(crmService, _metadataManager, logger);
+
+            _logger.LogInformation($"Connected to: {this.ConnectionDetails}");
         }
         #endregion
 
         #region Public Methods
+        public void LoadDataMappings(string filePath)
+        {
+            string fileContent = File.ReadAllText(filePath);
+            JObject jobject = JsonParser.ParseCrmData(fileContent);
+
+            _dataMapper.LoadMappings(jobject);
+        }
+
         public DataImportResult ImportFile(string importDataPath)
         {
             string fileContent = File.ReadAllText(importDataPath);
@@ -63,6 +84,25 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
         #endregion
 
         #region Private Methods
+        string _connectionDetails;
+        private string ConnectionDetails
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(_connectionDetails))
+                {
+                    var response = _crmService.RetrieveMultiple(new QueryExpression("organization")
+                    {
+                        NoLock = true
+                        , ColumnSet = new ColumnSet(new string[] { "name" })
+                    });
+
+                    _connectionDetails = (string)response.Entities.First().Attributes["name"];
+                }
+                return _connectionDetails;
+            }
+        }
+
         /// <summary>
         /// Cycle through all entities in the JSON file and perform specified operation
         /// </summary>
@@ -78,48 +118,93 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
             IList<JToken> entities = crmData.SelectToken("entities").ToList();
             foreach (var jsonEntity in entities)
             {
-                //Process the entities sequencially
-                var crmEntity = jsonEntity.ToObject<JsonEntity>(_jsonSerializer);
-
-                //Will look at using bulk updates in future
-                switch (crmEntity.Operation)
+                if (jsonEntity.SelectToken("SdkMessage") != null)
                 {
-                    case JsonEntity.OperationEnum.Delete:
-                        DeleteEntity(crmEntity, importResult);
-                        break;
+                    //Process the entities sequencially
+                    var sdkMessage = jsonEntity.ToObject<JsonSdkMessage>(_jsonSerializer);
 
-                    case JsonEntity.OperationEnum.Upsert:
-                        {
-                            //If the record exists update, otherwise create
-                            var existingEntity = RetrieveEntity(crmEntity);
-                            if (existingEntity != null)
+                    //Will look at using bulk updates in future
+                    switch (sdkMessage.MessageName)
+                    {
+                        case JsonSdkMessage.SdkMessageEnum.DeleteAttributeRequest:
                             {
-                                //only update if fields have changed
+                                var deleteAttributeRequest = jsonEntity.ToObject<JsonDeleteAttributeRequest>(_jsonSerializer);
+                                DeleteAttributeRequest(deleteAttributeRequest, importResult);
+                                break;
+                            }
+
+                        case JsonSdkMessage.SdkMessageEnum.SetStateRequest:
+                            {
+                                var setStateRequest = jsonEntity.ToObject<JsonSetStateRequest>(_jsonSerializer);
+                                SetStateRequest(setStateRequest, importResult);
+                                break;
+                            }
+
+                        default:
+                            throw new NotImplementedException();
+                    }
+                }
+                else
+                {
+                    //Process the entities sequencially
+                    var crmEntity = jsonEntity.ToObject<JsonEntity>(_jsonSerializer);
+                    _dataMapper.ProcessEntity(crmEntity);
+
+                    //Will look at using bulk updates in future
+                    switch (crmEntity.Operation)
+                    {
+                        case JsonEntity.OperationEnum.Delete:
+                            {
+                                var existingEntity = RetrieveEntity(crmEntity);
+                                if (existingEntity != null)
+                                    DeleteEntity(crmEntity, importResult);
+                                else
+                                    importResult.RecordsSkipped++;
+                            }
+                            break;
+
+                        case JsonEntity.OperationEnum.Upsert:
+                            {
+                                //If the record exists update, otherwise create
+                                var existingEntity = RetrieveEntity(crmEntity);
+                                if (existingEntity != null)
+                                {
+                                    //only update if fields have changed
+                                    var delta = existingEntity.Delta(crmEntity);
+                                    UpdateEntity(crmEntity, delta, importResult);
+                                }
+                                else
+                                {
+                                    CreateEntity(crmEntity, importResult);
+                                }
+                            }
+                            break;
+
+                        case JsonEntity.OperationEnum.Create:
+                            CreateEntity(crmEntity, importResult);
+                            break;
+
+                        case JsonEntity.OperationEnum.Update:
+                            {
+                                //Calculate the Update Delta
+                                var existingEntity = RetrieveEntity(crmEntity);
+
+                                //TODO: Check for null
                                 var delta = existingEntity.Delta(crmEntity);
                                 UpdateEntity(crmEntity, delta, importResult);
+                                break;
                             }
-                            else
-                            {
-                                CreateEntity(crmEntity, importResult);
-                            }
-                        }
-                        break;
 
-                    case JsonEntity.OperationEnum.Create:
-                        CreateEntity(crmEntity, importResult);
-                        break;
-
-                    case JsonEntity.OperationEnum.Update:
-                        {
-                            //Calculate the Update Delta
-                            var existingEntity = RetrieveEntity(crmEntity);
-                            var delta = existingEntity.Delta(crmEntity);
-                            UpdateEntity(crmEntity, delta, importResult);
+                        case JsonEntity.OperationEnum.Associate:
+                            AssociateEntity(crmEntity, importResult);
                             break;
-                        }
+
+                        default:
+                            throw new NotImplementedException();
+                    }
                 }
             }
-            
+
             return importResult;
         }
 
@@ -146,6 +231,14 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                         if (result != null)
                         {
                             result.RecordsSkipped++;
+                        }
+                        break;
+
+                    case (uint)0x8004500F:
+                        _logger.LogWarning($"Could not delete {crmEntity.LogicalName} entity with Id: '{crmEntity.Id}'. Workflow is Active.");
+                        if (result != null)
+                        {
+                            result.RecordsFailed++;
                         }
                         break;
 
@@ -208,6 +301,24 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                         }
                         break;
 
+                    case (uint)0x80044150:
+                        _logger.LogError($"Could not update {fieldsToUpdate.LogicalName} entity with Id: '{fieldsToUpdate.Id}'. SQL Error");
+                        _logger.LogVerbose(fex.Detail.TraceText);
+                        if (result != null)
+                        {
+                            result.RecordsFailed++;
+                        }
+                        break;
+
+                    case (uint)0x8004830A:
+                        _logger.LogError($"Could not update {fieldsToUpdate.LogicalName} entity with Id: '{fieldsToUpdate.Id}'. {fex.Message}");
+                        if (result != null)
+                        {
+                            result.RecordsFailed++;
+                        }
+                        break;
+
+
                     default:
                         throw;
                 }
@@ -234,6 +345,136 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                     //TODO: Behavior should be configurable
                     case (uint)0x80040237:
                         _logger.LogWarning($"Could not create {crmEntity.LogicalName} entity.  Record with id: '{crmEntity.Id}' already exists.");
+                        if (result != null)
+                        {
+                            result.RecordsSkipped++;
+                        }
+                        break;
+
+                    case (uint)0x8004022A:
+                        _logger.LogError($"Could not create {crmEntity.LogicalName} entity. {fex.Message}");
+                        if (result != null)
+                        {
+                            result.RecordsFailed++;
+                        }
+                        break;
+
+                    default:
+                        throw;
+                }
+            }
+        }
+
+        private void AssociateEntity(JsonEntity crmEntity, DataImportResult result = null)
+        {
+            try
+            {
+                var metadata = _metadataManager.RetrieveEntityMetadata(crmEntity.LogicalName);
+                var manyToManyRelationship = metadata.ManyToManyRelationships.FirstOrDefault();
+
+                var entity1Reference = new EntityReference(manyToManyRelationship.Entity1LogicalName, (Guid)crmEntity[manyToManyRelationship.Entity1IntersectAttribute]);
+                var entity2Reference = new EntityReference(manyToManyRelationship.Entity2LogicalName, (Guid)crmEntity[manyToManyRelationship.Entity2IntersectAttribute]);
+
+                // Use AssociateRequest
+                AssociateRequest request = new AssociateRequest()
+                {
+                    RelatedEntities = new EntityReferenceCollection(new List<EntityReference>(new EntityReference[]{ entity1Reference })),
+                    Relationship = new Relationship(manyToManyRelationship.SchemaName),
+                    Target = entity2Reference
+                };
+
+                _crmService.Execute(request);
+                if (result != null)
+                {
+                    result.RecordsCreated++;
+                }
+            }
+            catch (FaultException<OrganizationServiceFault> fex)
+            {
+                switch ((uint)fex.Detail.ErrorCode)
+                {
+                    //Continue if key is duplicate
+                    //TODO: Behavior should be configurable
+                    case (uint)0x80040237:
+                        _logger.LogWarning($"Could not create {crmEntity.LogicalName} entity.  Relationship already exists.");
+                        if (result != null)
+                        {
+                            result.RecordsSkipped++;
+                        }
+                        break;
+
+                    case (uint)0x80040217:
+                        _logger.LogWarning($"Failed to create {crmEntity.LogicalName} entity.  {fex.Detail.Message}");
+                        if (result != null)
+                        {
+                            result.RecordsSkipped++;
+                        }
+                        break;
+
+                    default:
+                        throw;
+                }
+            }
+        }
+
+        private void DeleteAttributeRequest(JsonDeleteAttributeRequest sdkMessage, DataImportResult result = null)
+        {
+            try
+            {
+                DeleteAttributeRequest request = new DeleteAttributeRequest();
+                request.EntityLogicalName = sdkMessage.EntityLogicalName;
+                request.LogicalName = sdkMessage.LogicalName;
+
+                var response = _crmService.Execute(request);
+
+                if (result != null)
+                {
+                    result.RecordsCreated++;
+                }
+            }
+            catch (FaultException<OrganizationServiceFault> fex)
+            {
+                switch ((uint)fex.Detail.ErrorCode)
+                {
+                    //Continue if key is duplicate
+                    //TODO: Behavior should be configurable
+                    case (uint)0x80040217:
+                        if (result != null)
+                        {
+                            result.RecordsSkipped++;
+                        }
+                        break;
+
+                    default:
+                        throw;
+                }
+            }
+        }
+
+        private void SetStateRequest(JsonSetStateRequest sdkMessage, DataImportResult result = null)
+        {
+            try
+            {
+                SetStateRequest request = new SetStateRequest();
+                request.EntityMoniker = new EntityReference(sdkMessage.LogicalName, sdkMessage.Target);
+                request.Status = new OptionSetValue(sdkMessage.StatusCode);
+                request.State = new OptionSetValue(sdkMessage.StateCode);
+
+                var response = _crmService.Execute(request);
+
+                if (result != null)
+                {
+                    result.RecordsCreated++;
+                }
+            }
+            catch (FaultException<OrganizationServiceFault> fex)
+            {
+                switch ((uint)fex.Detail.ErrorCode)
+                {
+                    //Continue if key is duplicate
+                    //TODO: Behavior should be configurable
+                    case (uint)0x80040217:
+                        _logger.LogWarning($"Failed to Set State on {sdkMessage.LogicalName}.  {fex.Detail.Message}");
                         if (result != null)
                         {
                             result.RecordsSkipped++;

@@ -32,7 +32,9 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
             Upsert = 0, //Default
             Create = 1,
             Update = 2,
-            Delete = 3
+            Delete = 3,
+            Associate = 4,
+            Disassociate = 5
         };
 
         public enum UpdateHintEnum : int

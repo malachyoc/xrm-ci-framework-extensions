@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2035
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xrm.Framework.CI.Extensions.Tests", "Xrm.Framework.CI.Extensions.Tests\Xrm.Framework.CI.Extensions.Tests.csproj", "{5B9B0E2D-CD06-49A2-9328-73D27692F1CE}"
 EndProject
@@ -9,7 +9,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xrm.Framework.CI.Extensions
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xrm.Framework.CI.Extensions.PowerShell.Cmdlets", "Xrm.Framework.CI.Extensions.PowerShell.Cmdlets\Xrm.Framework.CI.Extensions.PowerShell.Cmdlets.csproj", "{0AF2D810-8E16-4AA1-B3F8-75EB17CF8A24}"
 EndProject
-Project("{F5034706-568F-408A-B7B3-4D38C6DB8A32}") = "Xrm.Framework.CI.Extensions.PowerShell.Scripts", "Xrm.Framework.CI.Extensions.PowerShell.Scripts\Xrm.Framework.CI.Extensions.PowerShell.Scripts.pssproj", "{26E7A989-C329-4B54-A80D-200FC23306B9}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xrm.Framework.CI.Extensions.PowerShell.Scripts", "Xrm.Framework.CI.Extensions.PowerShell.Scripts", "{D8C99257-1EE3-47F2-AE7F-DBD98C102ABC}"
+	ProjectSection(SolutionItems) = preProject
+		Xrm.Framework.CI.Extensions.PowerShell.Scripts\ImportCrmData.ps1 = Xrm.Framework.CI.Extensions.PowerShell.Scripts\ImportCrmData.ps1
+		Xrm.Framework.CI.Extensions.PowerShell.Scripts\Xrm.Framework.CI.Extensions.PowerShell.psm1 = Xrm.Framework.CI.Extensions.PowerShell.Scripts\Xrm.Framework.CI.Extensions.PowerShell.psm1
+		Xrm.Framework.CI.Extensions.PowerShell.Scripts\Xrm.Framework.CI.Extensions.PowerShell.Scripts.pssproj = Xrm.Framework.CI.Extensions.PowerShell.Scripts\Xrm.Framework.CI.Extensions.PowerShell.Scripts.pssproj
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +34,6 @@ Global
 		{0AF2D810-8E16-4AA1-B3F8-75EB17CF8A24}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AF2D810-8E16-4AA1-B3F8-75EB17CF8A24}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AF2D810-8E16-4AA1-B3F8-75EB17CF8A24}.Release|Any CPU.Build.0 = Release|Any CPU
-		{26E7A989-C329-4B54-A80D-200FC23306B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{26E7A989-C329-4B54-A80D-200FC23306B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{26E7A989-C329-4B54-A80D-200FC23306B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{26E7A989-C329-4B54-A80D-200FC23306B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

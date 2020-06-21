@@ -1,0 +1,71 @@
+{
+  "schema": "https://github.com/malachyoc/xrm-ci-framework-extensions/_schema/crmdata.schema.json",
+  "schemaFormat": "http://json-schema.org/draft-07/schema#",
+  "schemaVersion": "1-0-0",
+  "entities": [
+    {
+      "LogicalName": "businessunit",
+      "Id": "11111111-0000-0000-0000-aaaaaaaaaaaa",
+      "Attributes": [
+        {
+          "LogicalName": "businessunitid",
+          "Type": "Guid",
+          "Value": "11111111-0000-0000-0000-aaaaaaaaaaaa"
+        },
+        {
+          "LogicalName": "name",
+          "Type": "String",
+          "Value": "swyftenergy"
+        }
+      ]
+    },
+    {
+      "LogicalName": "businessunit",
+      "Id": "25730128-62e0-e911-a812-000d3abaa207",
+      "Attributes": [
+        {
+          "LogicalName": "businessunitid",
+          "Type": "Guid",
+          "Value": "25730128-62e0-e911-a812-000d3abaa207"
+        },
+        {
+          "LogicalName": "name",
+          "Type": "String",
+          "Value": "Boilers"
+        },
+        {
+          "LogicalName": "parentbusinessunitid",
+          "Type": "EntityReference",
+          "Value": {
+            "Id": "11111111-0000-0000-0000-aaaaaaaaaaaa",
+            "LogicalName": "businessunit"
+          }
+        }
+      ]
+    },
+    {
+      "LogicalName": "businessunit",
+      "Id": "f420f933-62e0-e911-a812-000d3abaa207",
+      "Attributes": [
+        {
+          "LogicalName": "businessunitid",
+          "Type": "Guid",
+          "Value": "f420f933-62e0-e911-a812-000d3abaa207"
+        },
+        {
+          "LogicalName": "name",
+          "Type": "String",
+          "Value": "Heating Controls"
+        },
+        {
+          "LogicalName": "parentbusinessunitid",
+          "Type": "EntityReference",
+          "Value": {
+            "Id": "11111111-0000-0000-0000-aaaaaaaaaaaa",
+            "LogicalName": "businessunit"
+          }
+        }
+      ]
+    }
+  ]
+}

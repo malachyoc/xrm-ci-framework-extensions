@@ -15,21 +15,23 @@ namespace Xrm.Framework.CI.Extensions.Tests
 {
     public class ExportTests
     {
-        //[Fact(Skip = "Not a unit test")]
-        [Fact()]
-        public void IntegrationTest_ExportBUs()
+        [Fact(Skip = "Not a unit test")]
+        //[Fact()]
+        public void IntegrationTest_ExportStuff()
         {
             //Read sample file
-            IOrganizationService organisationService = new TestConnectionManager().CreateConnection();
+            IOrganizationService organisationService = new TestConnectionManager().CreateConnection("Connection.D365");
 
             //Update Data
             DataExportManager exporter = new DataExportManager(organisationService, new TestLogger());
-            exporter.LoadDataMappings(@"..\..\..\Xrm.Framework.CI.Extensions\Schema\entitymap.json");
+            exporter.LoadDataMappings(@"C:\Work\export-map.json");
 
-            String fetchQuery = @"<fetch top='50' ><entity name='businessunit' ><order attribute='createdon' /></entity></fetch>";
+            String fetchQuery = @"<fetch top='5000' >
+                </fetch>";
 
-            DataExportResult result = exporter.ExportData(fetchQuery, @"..\..\..\Xrm.Framework.CI.Extensions\Schema\test.json");
+            DataExportResult result = exporter.ExportData(fetchQuery, @"c:\work\swf_configuration.json");
         }
+
 
         [Fact()]
         public void FetchXmlExportTest()
