@@ -89,7 +89,7 @@
         "Attributes": {},
         "Operation": {
           "type": "string",
-          "enum": [ "delete", "create", "update", "upsert", "associate" ]
+          "enum": [ "delete", "create", "update", "upsert", "associate", "addprivilege" ]
         }
       },
       "required": [ "LogicalName" ]

@@ -189,6 +189,36 @@ namespace Xrm.Typed.Entities
 	#region 
 	static
 	/// <summary>
+	/// Permission to perform an action in Microsoft CRM. The platform checks for the privilege and rejects the attempt if the user does not hold the privilege.
+	/// </summary>
+	public partial class PrivilegeLogicalNames
+	{
+		
+		public const string accessright = "accessright";
+		
+		public const string canbebasic = "canbebasic";
+		
+		public const string canbedeep = "canbedeep";
+		
+		public const string canbeentityreference = "canbeentityreference";
+		
+		public const string canbeglobal = "canbeglobal";
+		
+		public const string canbelocal = "canbelocal";
+		
+		public const string canbeparententityreference = "canbeparententityreference";
+		
+		public const string name = "name";
+		
+		public const string privilegeid = "privilegeid";
+		
+		public const string versionnumber = "versionnumber";
+	}
+	#endregion
+	
+	#region 
+	static
+	/// <summary>
 	/// A publisher of a CRM solution.
 	/// </summary>
 	public partial class PublisherLogicalNames

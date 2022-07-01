@@ -542,6 +542,104 @@ namespace Xrm.Typed.Entities
 	}
 	
 	/// <summary>
+	/// Permission to perform an action in Microsoft CRM. The platform checks for the privilege and rejects the attempt if the user does not hold the privilege.
+	/// </summary>
+	public partial class Privilege
+	{
+		
+		#region 
+	static
+		public class canbebasicValues
+		{
+			
+			[System.ComponentModel.Description("No")]
+			public const bool No = false;
+			
+			[System.ComponentModel.Description("Yes")]
+			public const bool Yes = true;
+		}
+		#endregion
+		
+		#region 
+	static
+		public class canbedeepValues
+		{
+			
+			[System.ComponentModel.Description("No")]
+			public const bool No = false;
+			
+			[System.ComponentModel.Description("Yes")]
+			public const bool Yes = true;
+		}
+		#endregion
+		
+		#region 
+	static
+		public class canbeentityreferenceValues
+		{
+			
+			[System.ComponentModel.Description("No")]
+			public const bool No = false;
+			
+			[System.ComponentModel.Description("Yes")]
+			public const bool Yes = true;
+		}
+		#endregion
+		
+		#region 
+	static
+		public class canbeglobalValues
+		{
+			
+			[System.ComponentModel.Description("No")]
+			public const bool No = false;
+			
+			[System.ComponentModel.Description("Yes")]
+			public const bool Yes = true;
+		}
+		#endregion
+		
+		#region 
+	static
+		public class canbelocalValues
+		{
+			
+			[System.ComponentModel.Description("No")]
+			public const bool No = false;
+			
+			[System.ComponentModel.Description("Yes")]
+			public const bool Yes = true;
+		}
+		#endregion
+		
+		#region 
+	static
+		public class canbeparententityreferenceValues
+		{
+			
+			[System.ComponentModel.Description("No")]
+			public const bool No = false;
+			
+			[System.ComponentModel.Description("Yes")]
+			public const bool Yes = true;
+		}
+		#endregion
+		
+		#region 
+	static
+		public class isdisabledwhenintegratedValues
+		{
+			
+			[System.ComponentModel.Description("No")]
+			public const bool No = false;
+			
+			[System.ComponentModel.Description("Yes")]
+			public const bool Yes = true;
+		}
+		#endregion
+	}
+	
+	/// <summary>
 	/// A publisher of a CRM solution.
 	/// </summary>
 	public partial class Publisher

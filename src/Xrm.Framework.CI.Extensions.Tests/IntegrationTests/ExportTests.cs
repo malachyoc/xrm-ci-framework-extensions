@@ -15,21 +15,32 @@ namespace Xrm.Framework.CI.Extensions.Tests
 {
     public class ExportTests
     {
-        [Fact(Skip = "Not a unit test")]
-        //[Fact()]
+        //[Fact(Skip = "Not a unit test")]
+        [Fact()]
         public void IntegrationTest_ExportStuff()
         {
             //Read sample file
-            IOrganizationService organisationService = new TestConnectionManager().CreateConnection("Connection.D365");
+            IOrganizationService organisationService = new TestConnectionManager().CreateConnection("Connection.D365.UAT");
 
             //Update Data
             DataExportManager exporter = new DataExportManager(organisationService, new TestLogger());
-            exporter.LoadDataMappings(@"C:\Work\export-map.json");
+            String fetchQuery = @"<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>
+                                      <entity name='roleprivileges'>
+                                        <attribute name='roleid' />
+                                        <attribute name='privilegedepthmask' />
+                                        <link-entity name='role' from='roleid' to='roleid' link-type='inner' alias='r'>
+                                          <filter>
+                                            <condition attribute='parentroleid' operator='null' />
+                                            <condition attribute='ismanaged' operator='eq' value='false' />
+                                          </filter>
+                                        </link-entity>
+                                        <link-entity name='privilege' from='privilegeid' to='privilegeid' link-type='inner' alias='p'>
+                                          <attribute name='name' alias='privilegename' />
+                                        </link-entity>
+                                      </entity>
+                                    </fetch>";
 
-            String fetchQuery = @"<fetch top='5000' >
-                </fetch>";
-
-            DataExportResult result = exporter.ExportData(fetchQuery, @"c:\work\swf_configuration.json");
+            DataExportResult result = exporter.ExportData(fetchQuery, @"C:\svn\eBusiness\Utils\EnvironmentCreation\JSON\06. roleprivilege.json");
         }
 
 

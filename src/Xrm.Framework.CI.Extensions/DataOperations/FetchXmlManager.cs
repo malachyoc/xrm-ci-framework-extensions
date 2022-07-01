@@ -10,7 +10,9 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
 {
     public class FetchXmlManager
     {
-        public static string LineriseFetchXml(string xml)
+        public const string CONST_PAGINGCOOKIE = "paging-cookie";
+
+        public static string LineriseFetchXml(string xml, string pagingToken, int page, int count)
         {
             string result = "";
 
@@ -22,6 +24,23 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
             {
                 // Load the XmlDocument with the XML.
                 document.LoadXml(xml);
+
+
+                XmlAttributeCollection attrs = document.DocumentElement.Attributes;
+                if (pagingToken != null)
+                {
+                    XmlAttribute pagingAttr = document.CreateAttribute("paging-cookie");
+                    pagingAttr.Value = pagingToken;
+                    attrs.Append(pagingAttr);
+                }
+
+                XmlAttribute pageAttr = document.CreateAttribute("page");
+                pageAttr.Value = Convert.ToString(page);
+                attrs.Append(pageAttr);
+
+                XmlAttribute countAttr = document.CreateAttribute("count");
+                countAttr.Value = Convert.ToString(count);
+                attrs.Append(countAttr);
 
                 writer.Formatting = Formatting.None;
 

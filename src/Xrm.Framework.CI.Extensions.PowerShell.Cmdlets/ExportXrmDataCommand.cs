@@ -19,15 +19,52 @@ namespace Xrm.Framework.CI.PowerShell.Cmdlets
     [Cmdlet(VerbsData.Export, "XrmData")]
     public class ExportXrmDataCommand : XrmCommandBase
     {
+        private string _fetchXmlPath = String.Empty;
+        private string _dataFilePath = String.Empty;
+        private string _dataMappingFilePath = String.Empty;
         #region Parameters
         /// <summary>
         /// <para type="description">The absolute path to the data file to be imported</para>
         /// </summary>
         [Parameter(Mandatory = true)]
-        public string DataFilePath { get; set; }
+        public string DataFilePath
+        {
+            get
+            {
+                return _dataFilePath;
+            }
+            set
+            {
+                if (Path.IsPathRooted(value))
+                {
+                    _dataFilePath = value;
+                }
+                else
+                {
+                    _dataFilePath = Path.GetFullPath(this.SessionState.Path.CurrentLocation.Path + value);
+                }
+            }
+        }
 
         [Parameter(Mandatory = false)]
-        public string DataMappingFile { get; set; }
+        public string DataMappingFile
+        {
+            get
+            {
+                return _dataMappingFilePath;
+            }
+            set
+            {
+                if (Path.IsPathRooted(value))
+                {
+                    _dataMappingFilePath = value;
+                }
+                else
+                {
+                    _dataMappingFilePath = Path.GetFullPath(this.SessionState.Path.CurrentLocation.Path + value);
+                }
+            }
+        }
 
         /// <summary>
         /// <para type="description">The absolute path to the data file to be imported</para>
@@ -36,7 +73,23 @@ namespace Xrm.Framework.CI.PowerShell.Cmdlets
         public string FetchXml { get; set; }
 
         [Parameter(Mandatory = false)]
-        public string FetchXmlPath { get; set; }
+        public string FetchXmlPath { 
+            get
+            {
+                return _fetchXmlPath;
+            }
+            set
+            {
+                if (Path.IsPathRooted(value))
+                {
+                    _fetchXmlPath = value;
+                }
+                else
+                {
+                    _fetchXmlPath = Path.GetFullPath(this.SessionState.Path.CurrentLocation.Path + value);
+                }
+            }
+        }
 
         public ExportXrmDataCommand()
         {
@@ -53,6 +106,8 @@ namespace Xrm.Framework.CI.PowerShell.Cmdlets
             IOrganizationService pollingOrganizationService = xrmConnection.Connect(ConnectionString, 120);
 
             DataExportManager dataManager = new DataExportManager(pollingOrganizationService, Logger);
+
+            Logger.LogVerbose($"Fetch Path: {_fetchXmlPath}");
 
             //Load External Mappings
             string fetchXml = FetchXml;

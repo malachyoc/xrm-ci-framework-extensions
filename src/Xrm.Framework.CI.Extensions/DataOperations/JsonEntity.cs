@@ -23,8 +23,17 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
             this.Attributes = new AttributeCollection();
             foreach (var attribute in entityToClone.Attributes.OrderBy(o => o.Key))
             {
-                //TODO: Still need to clone value
-                this.Attributes.Add(attribute.Key, attribute.Value);
+                //De-alias values
+                if (attribute.Value.GetType() == typeof(AliasedValue))
+                {
+                    var aliasAttribute = (AliasedValue)attribute.Value;
+                    this.Attributes.Add(attribute.Key, aliasAttribute.Value);
+                }
+                else
+                {
+                    //TODO: Still need to clone value
+                    this.Attributes.Add(attribute.Key, attribute.Value);
+                }
             }
         }
 
@@ -34,7 +43,8 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
             Update = 2,
             Delete = 3,
             Associate = 4,
-            Disassociate = 5
+            Disassociate = 5,
+            AddPrivilege = 100
         };
 
         public enum UpdateHintEnum : int

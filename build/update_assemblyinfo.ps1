@@ -27,7 +27,7 @@ $filecontent = Get-Content($assebmleyInfoFile)
 # Regular expression pattern to find the version in the build number 
 $assemblyVersionRegex = "(?<=AssemblyVersion\("")(\d+\.\d+\.\d+\.\d+)(?=""\))"
 $assemblyFileVersionRegex = "(?<=AssemblyFileVersion\("")(\d+\.\d+\.\d+\.\d+)(?=""\))"
-$assemblyTitleRegex = "(?<=AssemblyTitle\("")([^\n]+)(?=""\))"
+$assemblyDescriptionRegex = "(?<=AssemblyDescription\("")([^\n]+)(?=""\))"
 
 #Globally Scoped Variable
 $adjustedFileVersion; $adjustedAssembleyVersion;
@@ -48,13 +48,13 @@ if($filecontent -match $assemblyFileVersionRegex)
 	$filecontent = $filecontent -replace $assemblyFileVersionRegex, $adjustedAssembleyVersion
 }
 
-if($filecontent -match $assemblyTitleRegex)
+if($filecontent -match $assemblyDescriptionRegex)
 {
 	$builder = ([string]$BUILD_QueuedBy).Replace("\", "\\");
 
 	$adjustedAssembleyTitle = "$assembleyTitle [Branch: $BUILD_Branch ($BUILD_SourceVersionMessage)] [Build: $BUILD_BuildNumber] [Built By: $builder]";
 	LogMessage "Tagging Assembly: $adjustedAssembleyTitle [File Version: $adjustedFileVersion]  [Assembly Version: $adjustedFileVersion]"
-	$filecontent = $filecontent -replace $assemblyTitleRegex, $adjustedAssembleyTitle
+	$filecontent = $filecontent -replace $assemblyDescriptionRegex, $adjustedAssembleyTitle
 }
 
 $Utf8BomEncoding = New-Object System.Text.UTF8Encoding $False

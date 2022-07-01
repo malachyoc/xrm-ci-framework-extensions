@@ -39,6 +39,7 @@ namespace Xrm.Framework.CI.PowerShell.Cmdlets
         protected override void ProcessRecord()
         {
             base.ProcessRecord();
+
             XrmConnectionManager xrmConnection = new XrmConnectionManager(Logger);
             IOrganizationService pollingOrganizationService = xrmConnection.Connect(ConnectionString, 120);
 
@@ -47,7 +48,7 @@ namespace Xrm.Framework.CI.PowerShell.Cmdlets
             if (File.Exists(DataMappingFile))
             {
                 dataManager.LoadDataMappings(DataMappingFile);
-            }  
+            }
 
             var importResult = dataManager.ImportFile(DataFilePath);
             if (!importResult.Success)
@@ -59,7 +60,6 @@ namespace Xrm.Framework.CI.PowerShell.Cmdlets
             Logger.LogInformation($"Records Updated: {importResult.RecordsUpdated}");
             Logger.LogInformation($"Records Deleted: {importResult.RecordsDeleted}");
             Logger.LogInformation($"Records Skipped: {importResult.RecordsSkipped}");
-            Logger.LogVerbose("Leaving XrmImportData");
         }
         #endregion
     }

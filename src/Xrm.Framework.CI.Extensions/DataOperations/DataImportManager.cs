@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.ServiceModel;
 using Xrm.Framework.CI.Common.Logging;
+using Xrm.Framework.CI.Extensions.Managers;
 using Xrm.Framework.CI.Extensions.SdkMessages;
 
 namespace Xrm.Framework.CI.Extensions.DataOperations
@@ -45,16 +46,18 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
         private JsonSerializer _jsonSerializer;
         private DataMapper _dataMapper;
         private MetadataManager _metadataManager;
+        private RolePrivilegeManager _rolePrivilegeManager;
 
         public DataImportManager(IOrganizationService crmService, ILogger logger)
         {
             _crmService = crmService;
             _logger = logger;
+
             _jsonSerializer = new JsonSerializer();
             _jsonSerializer.Converters.Add(new CrmEntityConverter());
             _metadataManager = new MetadataManager(crmService, logger);
             _dataMapper = new DataMapper(crmService, _metadataManager, logger);
-
+            _rolePrivilegeManager = new RolePrivilegeManager(crmService, logger);
             _logger.LogInformation($"Connected to: {this.ConnectionDetails}");
         }
         #endregion
@@ -195,6 +198,10 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                                 break;
                             }
 
+                        case JsonEntity.OperationEnum.AddPrivilege:
+                            AddPrivilege(crmEntity, importResult);
+                            break;
+
                         case JsonEntity.OperationEnum.Associate:
                             AssociateEntity(crmEntity, importResult);
                             break;
@@ -203,6 +210,12 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                             throw new NotImplementedException();
                     }
                 }
+            }
+
+            //Check for unsubmitted Add Privilege Request
+            if(_rolePrivilegeManager.UnsubmittedRequests == true)
+            {
+                _rolePrivilegeManager.SubmitAddPrivilegesRequests(importResult);
             }
 
             return importResult;
@@ -294,7 +307,7 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                     //Continue if object does not exist
                     //TODO: Behavior should be configurable
                     case (uint)0x80040217:
-                        _logger.LogWarning($"Could not update {fieldsToUpdate.LogicalName} entity with Id: '{fieldsToUpdate.Id}'. Object does not exist.");
+                        _logger.LogWarning($"Could not update {fieldsToUpdate.LogicalName} entity with Id: '{fieldsToUpdate.Id}'. {fex.Message}");
                         if (result != null)
                         {
                             result.RecordsSkipped++;
@@ -356,6 +369,46 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                         if (result != null)
                         {
                             result.RecordsFailed++;
+                        }
+                        break;
+
+                    default:
+                        throw;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Hardcoded 
+        /// </summary>
+        /// <param name="crmEntity"></param>
+        /// <param name="result"></param>
+        private void AddPrivilege(JsonEntity crmEntity, DataImportResult result = null)
+        {
+            try
+            {
+                //Stage the privilege
+                _rolePrivilegeManager.StagePrivilege(crmEntity);
+            }
+            catch (FaultException<OrganizationServiceFault> fex)
+            {
+                switch ((uint)fex.Detail.ErrorCode)
+                {
+                    //Continue if key is duplicate
+                    //TODO: Behavior should be configurable
+                    case (uint)0x80040237:
+                        _logger.LogWarning($"Could not create {crmEntity.LogicalName} entity.  Relationship already exists.");
+                        if (result != null)
+                        {
+                            result.RecordsSkipped++;
+                        }
+                        break;
+
+                    case (uint)0x80040217:
+                        _logger.LogWarning($"Failed to create {crmEntity.LogicalName} entity.  {fex.Detail.Message}");
+                        if (result != null)
+                        {
+                            result.RecordsSkipped++;
                         }
                         break;
 

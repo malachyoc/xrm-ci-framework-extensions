@@ -119,26 +119,25 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
             writer.WriteValue("http://json-schema.org/draft-07/schema#");
             writer.WritePropertyName("schemaVersion");
             writer.WriteValue("1-0-0");
-
-            //Execute the fetch query
-            _logger.LogVerbose($"Linerise Fetch Query");
-            string fetchQuery = FetchXmlManager.LineriseFetchXml(rawFetchQuery);
-
-            _logger.LogVerbose("Executing Fetch Query");
-            var retrieveMultipleRequest = new RetrieveMultipleRequest();
-            retrieveMultipleRequest.Query = new FetchExpression(fetchQuery);
-
-            RetrieveMultipleResponse queryResponse = (RetrieveMultipleResponse)_crmService.Execute(retrieveMultipleRequest);
-
+           
             DataExportResult results = new DataExportResult();
             writer.WritePropertyName("entities");
             writer.WriteStartArray();
 
+            string pagingCookie = String.Empty;
+            bool moreRecords = false;
+            int iPage = 1;
 
-            //Step 2:Page through
-            _logger.LogVerbose("Processing Results");
             do
             {
+                //Create Query
+                string fetchQuery = FetchXmlManager.LineriseFetchXml(rawFetchQuery, pagingCookie, iPage, 5000);
+                var retrieveMultipleRequest = new RetrieveMultipleRequest();
+                retrieveMultipleRequest.Query = new FetchExpression(fetchQuery);
+
+                //Execute Query
+                RetrieveMultipleResponse queryResponse = (RetrieveMultipleResponse)_crmService.Execute(retrieveMultipleRequest);
+
                 List<JsonEntity> additionalEntities = 
                     queryResponse.EntityCollection.Entities
                         .Select(r => this.ParseEntity(r))
@@ -151,9 +150,14 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                     _jsonSerializer.Serialize(writer, entity);
                 }
                 writer.Flush();
-            }
+                //Execute the fetch query
+                _logger.LogVerbose($"{additionalEntities.Count()} records written to file.");
 
-            while (queryResponse.EntityCollection.MoreRecords == true);
+                pagingCookie = queryResponse.EntityCollection.PagingCookie;
+                moreRecords = queryResponse.EntityCollection.MoreRecords;
+                iPage++;
+            }
+            while (moreRecords);
             writer.WriteEndArray();
             writer.WriteEndObject();
 

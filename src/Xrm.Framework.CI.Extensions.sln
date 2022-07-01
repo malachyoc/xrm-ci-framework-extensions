@@ -11,9 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xrm.Framework.CI.Extensions
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xrm.Framework.CI.Extensions.PowerShell.Scripts", "Xrm.Framework.CI.Extensions.PowerShell.Scripts", "{D8C99257-1EE3-47F2-AE7F-DBD98C102ABC}"
 	ProjectSection(SolutionItems) = preProject
+		Xrm.Framework.CI.Extensions.PowerShell.Scripts\ExportCrmData.ps1 = Xrm.Framework.CI.Extensions.PowerShell.Scripts\ExportCrmData.ps1
 		Xrm.Framework.CI.Extensions.PowerShell.Scripts\ImportCrmData.ps1 = Xrm.Framework.CI.Extensions.PowerShell.Scripts\ImportCrmData.ps1
-		Xrm.Framework.CI.Extensions.PowerShell.Scripts\Xrm.Framework.CI.Extensions.PowerShell.psm1 = Xrm.Framework.CI.Extensions.PowerShell.Scripts\Xrm.Framework.CI.Extensions.PowerShell.psm1
-		Xrm.Framework.CI.Extensions.PowerShell.Scripts\Xrm.Framework.CI.Extensions.PowerShell.Scripts.pssproj = Xrm.Framework.CI.Extensions.PowerShell.Scripts\Xrm.Framework.CI.Extensions.PowerShell.Scripts.pssproj
 	EndProjectSection
 EndProject
 Global

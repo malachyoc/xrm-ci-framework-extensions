@@ -97,7 +97,15 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                         _dataMappings.Add(mapping.EntityLogicalName, entityDictionary);
                     }
 
-                    entityDictionary.Add(mapping.SourceId.Value, mapping.TargetId.Value);
+                    try
+                    {
+                        entityDictionary.Add(mapping.SourceId.Value, mapping.TargetId.Value);
+                    }
+                    catch(Exception ex)
+                    {
+                        _logger.LogError($"{ex.GetType().Name}: {mapping?.SourceId.Value} to {mapping?.TargetId.Value}");
+                        throw;
+                    }
                 }
             }
         }

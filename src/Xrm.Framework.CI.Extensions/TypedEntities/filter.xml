@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <filter>
-	<entities>
+    <entities>
+		<entity>Dependency</entity>
 		<entity>PluginAssembly</entity>
-    <entity>PluginType</entity>
-    <entity>Publisher</entity>
-    <entity>Solution</entity>
-    <entity>SolutionComponent</entity>
-    <entity>WebResource</entity>
+        <entity>PluginType</entity>
+        <entity>Publisher</entity>
+		<entity>Privilege</entity>
+		<entity>Solution</entity>
+        <entity>SolutionComponent</entity>
+        <entity>WebResource</entity>
   </entities>
 </filter>

@@ -48,7 +48,7 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
             var metadata = this.RetrieveEntityMetadata(entity.LogicalName);
             if (metadata == null)
                 return;
-            
+           
             if(metadata.IsIntersect == true)
             {
                 //Remove Primary attribute for many-to-many
@@ -58,6 +58,16 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                 //Set Id to Empty
                 entity.Id = Guid.Empty;
                 entity.Operation = JsonEntity.OperationEnum.Associate;
+            }
+
+            switch (entity.LogicalName)
+            {
+                case "roleprivileges":
+                    entity.Operation = JsonEntity.OperationEnum.AddPrivilege;
+                    break;
+
+                default:
+                    break;
             }
         }
         #endregion

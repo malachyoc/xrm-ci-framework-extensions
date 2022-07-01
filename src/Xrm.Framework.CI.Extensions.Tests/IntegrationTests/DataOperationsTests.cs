@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using FakeXrmEasy;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
@@ -13,14 +12,15 @@ namespace Xrm.Framework.CI.Extensions.Tests
 {
     public class DataOperationTests 
     {
-        [Fact(Skip ="Not a unit test")]
+        //[Fact(Skip ="Not a unit test")]
+        [Fact]
         public void ImportConfiguration()
         {
             //Read sample file
-            IOrganizationService organisationService = new TestConnectionManager().CreateConnection("Connection.D365.Uat");
+            IOrganizationService organisationService = new TestConnectionManager().CreateConnection("Connection.D365.UAT");
             DataImportManager importer = new DataImportManager(organisationService, new TestLogger());
-            importer.LoadDataMappings(@"..solutions\environments\import-map.json");
-            var result = importer.ImportFile(@"..\crm-platform\src\solutions\environments\8. systemusers-uat.json");
+            importer.LoadDataMappings(@"C:\svn\eBusiness\Utils\EnvironmentCreation\JSON\import-map.json");
+            var result = importer.ImportFile(@"C:\svn\eBusiness\Utils\EnvironmentCreation\JSON\06. roleprivilege.json");
         }
 
         [Fact()]
