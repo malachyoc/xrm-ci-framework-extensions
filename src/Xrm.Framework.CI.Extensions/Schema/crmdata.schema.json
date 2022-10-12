@@ -1,37 +1,45 @@
 {
-	"$schema": "http://json-schema.org/draft-07/schema",
-	"title": "JSON Schema for crm data files",
-	"description": "schema for TCorpIM Transaction File",
-	"self": {
-		"name": "CrmData",
-		"format": "http://json-schema.org/draft-07/schema#",
-		"version": "1-0-0"
-	},
-	"properties": {
-		"schema": {
-			"type": "string",
-			"enum": ["https://github.com/malachyoc/xrm-ci-framework-extensions/_schema/crmdata.schema.json"]
-		},
-		"schemaFormat": {
-			"type": "string",
-			"enum": ["http://json-schema.org/draft-07/schema#"]
-		},
-		"schemaVersion": {
-			"type": "string",
-			"enum": ["1-0-0"]
-		},
-		"Entities": {
-			"type": "array",
-			"additionalItems": false,
-			"items": {
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "JSON Schema for crm data files",
+  "description": "schema for TCorpIM Transaction File",
+  "self": {
+    "name": "CrmData",
+    "format": "http://json-schema.org/draft-07/schema#",
+    "version": "1-0-0"
+  },
+  "properties": {
+    "schema": {
+      "type": "string",
+      "enum": [ "https://github.com/malachyoc/xrm-ci-framework-extensions/_schema/crmdata.schema.json" ]
+    },
+    "schemaFormat": {
+      "type": "string",
+      "enum": [ "http://json-schema.org/draft-07/schema#" ]
+    },
+    "schemaVersion": {
+      "type": "string",
+      "enum": [ "1-0-0" ]
+    },
+    "entities": {
+      "type": "array",
+      "additionalItems": false,
+      "items": {
 
-						"$ref": "#/definitions/EntityTarget"
-				
-			}
-		}
-	},
-	"required": ["entities"]
-	,
+        "$ref": "#/definitions/EntityTarget"
+
+      }
+    },
+    "mappings": {
+      "type": "array",
+      "additionalItems": false,
+      "items": {
+
+        "$ref": "#/definitions/EntityMapping"
+
+      }
+    }
+  },
+  "additionalProperties": false,
   "definitions": {
     "EntityTarget": {
       "type": "object",
@@ -46,11 +54,39 @@
         "Attributes": {},
         "Operation": {
           "type": "string",
-          "enum": ["delete", "create", "update", "upsert"]
+          "enum": [ "delete", "create", "update", "upsert" ]
         }
 
       },
-      "required": [ "id", "logicalname"]
+      "required": [ "Id", "LogicalName" ]
+    },
+    "EntityMapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "EntityLogicalName": {
+          "type": "string"
+        },
+        "TargetQuery": {
+          "type": [ "string", "null" ]
+        },
+        "SourceQuery": {
+          "type": [ "string", "null" ]
+        },
+        "SourceId": {
+          "$ref": "#/definitions/Guid"
+        },
+        "TargetId": {
+          "$ref": "#/definitions/Guid"
+        },
+        "Attributes": {},
+        "Operation": {
+          "type": "string",
+          "enum": [ "delete", "create", "update", "upsert" ]
+        }
+
+      },
+        "required": [ "EntityLogicalName" ]
     },
     "Guid": {
       "type ": "string",
