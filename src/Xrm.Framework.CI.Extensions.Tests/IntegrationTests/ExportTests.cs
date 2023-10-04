@@ -25,22 +25,20 @@ namespace Xrm.Framework.CI.Extensions.Tests
             //Update Data
             DataExportManager exporter = new DataExportManager(organisationService, new TestLogger());
             String fetchQuery = @"<fetch version='1.0' output-format='xml-platform' mapping='logical' distinct='false'>
-                                      <entity name='roleprivileges'>
-                                        <attribute name='roleid' />
-                                        <attribute name='privilegedepthmask' />
-                                        <link-entity name='role' from='roleid' to='roleid' link-type='inner' alias='r'>
-                                          <filter>
-                                            <condition attribute='parentroleid' operator='null' />
-                                            <condition attribute='ismanaged' operator='eq' value='false' />
-                                          </filter>
-                                        </link-entity>
-                                        <link-entity name='privilege' from='privilegeid' to='privilegeid' link-type='inner' alias='p'>
-                                          <attribute name='name' alias='privilegename' />
-                                        </link-entity>
-                                      </entity>
-                                    </fetch>";
+              <entity name='il_priorityrule'>
+                <attribute name='il_type' />
+                <attribute name='il_name' />
+                <attribute name='il_validityperiod' />
+                <attribute name='il_priorityruleid' />
+                <attribute name='il_minvalue' />
+                <attribute name='il_maxvalue' />
+                <filter>
+                  <condition attribute='il_name' operator='eq' value='Test Rule 3' />
+                </filter>
+              </entity>
+            </fetch>";
 
-            DataExportResult result = exporter.ExportData(fetchQuery, @"C:\svn\eBusiness\Utils\EnvironmentCreation\JSON\06. roleprivilege.json");
+            DataExportResult result = exporter.ExportData(fetchQuery, @"C:\svn\eBusiness\Utils\EnvironmentCreation\JSON\il_priorityrule.json");
         }
 
 

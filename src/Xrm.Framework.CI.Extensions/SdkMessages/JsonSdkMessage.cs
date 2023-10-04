@@ -17,7 +17,8 @@ namespace Xrm.Framework.CI.Extensions.SdkMessages
 
         public enum SdkMessageEnum : int {
             DeleteAttributeRequest = 0,
-            SetStateRequest = 1
+            SetStateRequest = 1,
+            GrantAccessRequest = 2
         };
 
         [JsonProperty("sdkmessage")]

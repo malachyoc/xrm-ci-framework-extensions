@@ -129,6 +129,14 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                                 newAttribute = new KeyValuePair<string, object>(attributeName, attributeValue.ToObject<DateTime>());
                                 break;
 
+                            case nameof(Money):
+                                {
+                                    //Deserialise as a decimal
+                                    var moneyValue = new Money(attributeValue.ToObject<Decimal>());
+                                    newAttribute = new KeyValuePair<string, object>(attributeName, moneyValue);
+                                }
+                                break;
+
                             default:
                                 throw new NotImplementedException($"Cannot deserialise attributes of type: {attributeType}");
                         }

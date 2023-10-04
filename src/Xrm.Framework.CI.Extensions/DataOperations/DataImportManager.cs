@@ -28,6 +28,7 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
             public int RecordsDeleted { get; set; }
             public int RecordsSkipped { get; set; }
             public int RecordsFailed { get; set; }
+            public int SdkOperationsPerformed { get; set; }
             #endregion
 
             #region Constructor
@@ -121,94 +122,116 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
             IList<JToken> entities = crmData.SelectToken("entities").ToList();
             foreach (var jsonEntity in entities)
             {
-                if (jsonEntity.SelectToken("SdkMessage") != null)
+                try
                 {
-                    //Process the entities sequencially
-                    var sdkMessage = jsonEntity.ToObject<JsonSdkMessage>(_jsonSerializer);
-
-                    //Will look at using bulk updates in future
-                    switch (sdkMessage.MessageName)
+                    if (jsonEntity.SelectToken("SdkMessage") != null)
                     {
-                        case JsonSdkMessage.SdkMessageEnum.DeleteAttributeRequest:
-                            {
-                                var deleteAttributeRequest = jsonEntity.ToObject<JsonDeleteAttributeRequest>(_jsonSerializer);
-                                DeleteAttributeRequest(deleteAttributeRequest, importResult);
-                                break;
-                            }
+                        //Process the entities sequencially
+                        var sdkMessage = jsonEntity.ToObject<JsonSdkMessage>(_jsonSerializer);
 
-                        case JsonSdkMessage.SdkMessageEnum.SetStateRequest:
-                            {
-                                var setStateRequest = jsonEntity.ToObject<JsonSetStateRequest>(_jsonSerializer);
-                                SetStateRequest(setStateRequest, importResult);
-                                break;
-                            }
+                        //Will look at using bulk updates in future
+                        switch (sdkMessage.MessageName)
+                        {
+                            case JsonSdkMessage.SdkMessageEnum.DeleteAttributeRequest:
+                                {
+                                    var deleteAttributeRequest = jsonEntity.ToObject<JsonDeleteAttributeRequest>(_jsonSerializer);
+                                    DeleteAttributeRequest(deleteAttributeRequest, importResult);
+                                    break;
+                                }
 
-                        default:
-                            throw new NotImplementedException();
+                            case JsonSdkMessage.SdkMessageEnum.SetStateRequest:
+                                {
+                                    var setStateRequest = jsonEntity.ToObject<JsonSetStateRequest>(_jsonSerializer);
+                                    SetStateRequest(setStateRequest, importResult);
+                                    break;
+                                }
+
+                            case JsonSdkMessage.SdkMessageEnum.GrantAccessRequest:
+                                {
+                                    var grantAccessRequest = jsonEntity.ToObject<JsonGrantAccessRequest>(_jsonSerializer);
+                                    GrantAccessRequest(grantAccessRequest, importResult);
+                                    break;
+                                }
+
+                            default:
+                                throw new NotImplementedException();
+                        }
+                    }
+                    else
+                    {
+                        //Process the entities sequencially
+                        var crmEntity = jsonEntity.ToObject<JsonEntity>(_jsonSerializer);
+                        _dataMapper.ProcessEntity(crmEntity);
+
+                        //Will look at using bulk updates in future
+                        switch (crmEntity.Operation)
+                        {
+                            case JsonEntity.OperationEnum.Delete:
+                                {
+                                    var existingEntity = RetrieveEntity(crmEntity);
+                                    if (existingEntity != null)
+                                        DeleteEntity(crmEntity, importResult);
+                                    else
+                                        importResult.RecordsSkipped++;
+                                }
+                                break;
+
+                            case JsonEntity.OperationEnum.Upsert:
+                                {
+                                    //If the record exists update, otherwise create
+                                    var existingEntity = RetrieveEntity(crmEntity);
+                                    if (existingEntity != null)
+                                    {
+                                        //only update if fields have changed
+                                        var delta = existingEntity.Delta(crmEntity);
+                                        UpdateEntity(crmEntity, delta, importResult);
+                                    }
+                                    else
+                                    {
+                                        CreateEntity(crmEntity, importResult);
+                                    }
+                                }
+                                break;
+
+                            case JsonEntity.OperationEnum.Create:
+                                CreateEntity(crmEntity, importResult);
+                                break;
+
+                            case JsonEntity.OperationEnum.Update:
+                                {
+                                    //Calculate the Update Delta
+                                    var existingEntity = RetrieveEntity(crmEntity);
+                                    if (existingEntity != null)
+                                    {
+                                        //TODO: Check for null
+                                        var delta = existingEntity.Delta(crmEntity);
+                                        UpdateEntity(crmEntity, delta, importResult);
+                                    }
+                                    else
+                                    {
+                                        importResult.RecordsFailed++;
+                                        _logger.LogError("'{0}' with id '{1}' does not exist", crmEntity.LogicalName, crmEntity.Id);
+                                    }
+                                    break;
+                                }
+
+                            case JsonEntity.OperationEnum.AddPrivilege:
+                                AddPrivilege(crmEntity, importResult);
+                                break;
+
+                            case JsonEntity.OperationEnum.Associate:
+                                AssociateEntity(crmEntity, importResult);
+                                break;
+
+                            default:
+                                throw new NotImplementedException();
+                        }
                     }
                 }
-                else
+                catch(Exception ex)
                 {
-                    //Process the entities sequencially
-                    var crmEntity = jsonEntity.ToObject<JsonEntity>(_jsonSerializer);
-                    _dataMapper.ProcessEntity(crmEntity);
-
-                    //Will look at using bulk updates in future
-                    switch (crmEntity.Operation)
-                    {
-                        case JsonEntity.OperationEnum.Delete:
-                            {
-                                var existingEntity = RetrieveEntity(crmEntity);
-                                if (existingEntity != null)
-                                    DeleteEntity(crmEntity, importResult);
-                                else
-                                    importResult.RecordsSkipped++;
-                            }
-                            break;
-
-                        case JsonEntity.OperationEnum.Upsert:
-                            {
-                                //If the record exists update, otherwise create
-                                var existingEntity = RetrieveEntity(crmEntity);
-                                if (existingEntity != null)
-                                {
-                                    //only update if fields have changed
-                                    var delta = existingEntity.Delta(crmEntity);
-                                    UpdateEntity(crmEntity, delta, importResult);
-                                }
-                                else
-                                {
-                                    CreateEntity(crmEntity, importResult);
-                                }
-                            }
-                            break;
-
-                        case JsonEntity.OperationEnum.Create:
-                            CreateEntity(crmEntity, importResult);
-                            break;
-
-                        case JsonEntity.OperationEnum.Update:
-                            {
-                                //Calculate the Update Delta
-                                var existingEntity = RetrieveEntity(crmEntity);
-
-                                //TODO: Check for null
-                                var delta = existingEntity.Delta(crmEntity);
-                                UpdateEntity(crmEntity, delta, importResult);
-                                break;
-                            }
-
-                        case JsonEntity.OperationEnum.AddPrivilege:
-                            AddPrivilege(crmEntity, importResult);
-                            break;
-
-                        case JsonEntity.OperationEnum.Associate:
-                            AssociateEntity(crmEntity, importResult);
-                            break;
-
-                        default:
-                            throw new NotImplementedException();
-                    }
+                    _logger.LogError(ex.Message);
+                    throw;
                 }
             }
 
@@ -534,6 +557,72 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                         }
                         break;
 
+                    default:
+                        throw;
+                }
+            }
+        }
+
+        private void GrantAccessRequest(JsonGrantAccessRequest sdkMessage, DataImportResult result = null)
+        {
+            try
+            {
+                PrincipalAccess principalAccess = new PrincipalAccess();
+                principalAccess.Principal = sdkMessage.Principal;
+
+                if (sdkMessage.ReadAccess)
+                {
+                    principalAccess.AccessMask |= AccessRights.ReadAccess;
+                }
+
+                if (sdkMessage.WriteAccess)
+                {
+                    principalAccess.AccessMask |= AccessRights.WriteAccess;
+                }
+
+                if (sdkMessage.DeleteAccess)
+                {
+                    principalAccess.AccessMask |= AccessRights.DeleteAccess;
+                }
+
+                if (sdkMessage.AssignAccess)
+                {
+                    principalAccess.AccessMask |= AccessRights.AssignAccess;
+                }
+
+                if (sdkMessage.AppendAccess)
+                {
+                    principalAccess.AccessMask |= AccessRights.AppendAccess;
+                }
+
+                if (sdkMessage.AppendToAccess)
+                {
+                    principalAccess.AccessMask |= AccessRights.AppendToAccess;
+                }
+
+                if (sdkMessage.ShareAccess)
+                {
+                    principalAccess.AccessMask |= AccessRights.ShareAccess;
+                }
+
+                GrantAccessRequest request = new GrantAccessRequest();
+                request.Target = sdkMessage.Target;
+                request.PrincipalAccess = principalAccess;
+                
+
+                var response = _crmService.Execute(request);
+
+                if (result != null)
+                {
+                    result.SdkOperationsPerformed++;
+                }
+            }
+            catch (FaultException<OrganizationServiceFault> fex)
+            {
+                switch ((uint)fex.Detail.ErrorCode)
+                {
+                    //Continue if key is duplicate
+                    //TODO: Behavior should be configurable
                     default:
                         throw;
                 }

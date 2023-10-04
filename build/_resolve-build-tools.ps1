@@ -45,6 +45,12 @@ if (!(Check-Command $msbuild))
 {
 	#MSBuild is not on the path; assume we are running on Azure Pipelines VM
 	$msbuild = "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\MSBuild\15.0\Bin\MSBuild.exe";
+	
+	if (!(Check-Command $msbuild))
+	{ 
+		$msbuild = "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin\MSBuild.exe";
+	}
+	
 	if (!(Check-Command $msbuild))
 	{ 
 		#MSBuild is not found - should not happen

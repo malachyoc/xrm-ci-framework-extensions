@@ -66,13 +66,34 @@
         "statuscode": { "type": "number" }
       },
       "required": [ "LogicalName" ]
+    },
+    "GrantAccessRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "SdkMessage": {
+          "type": "string",
+          "enum": [ "GrantAccessRequest" ]
+        },
+        "Target": {},
+        "Principal": {},
+        "ReadAccess": { "type": "boolean" },
+        "WriteAccess": { "type": "boolean" },
+        "DeleteAccess": { "type": "boolean" },
+        "AssignAccess": { "type": "boolean" },
+        "AppendAccess": { "type": "boolean" },
+        "AppendToAccess": { "type": "boolean" },
+        "ShareAccess": { "type": "boolean" }
+      },
+      "required": [ "Principal", "Target" ]
     }
   },
   "definitions": {
     "SdkMessage": {
       "oneOf": [
         { "$ref": "#/sdkmessages/DeleteAttributeRequest" },
-        { "$ref": "#/sdkmessages/SetStateRequest" }
+        { "$ref": "#/sdkmessages/SetStateRequest" },
+        { "$ref": "#/sdkmessages/GrantAccessRequest" }
       ],
       "required": [ "SdkMessage" ]
     },

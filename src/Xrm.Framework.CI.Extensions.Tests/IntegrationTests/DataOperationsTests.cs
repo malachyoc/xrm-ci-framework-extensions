@@ -17,10 +17,10 @@ namespace Xrm.Framework.CI.Extensions.Tests
         public void ImportConfiguration()
         {
             //Read sample file
-            IOrganizationService organisationService = new TestConnectionManager().CreateConnection("Connection.D365.UAT");
+            IOrganizationService organisationService = new TestConnectionManager().CreateConnection("Connection.D365.UAT4");
             DataImportManager importer = new DataImportManager(organisationService, new TestLogger());
             importer.LoadDataMappings(@"C:\svn\eBusiness\Utils\EnvironmentCreation\JSON\import-map.json");
-            var result = importer.ImportFile(@"C:\svn\eBusiness\Utils\EnvironmentCreation\JSON\06. roleprivilege.json");
+            var result = importer.ImportFile(@"C:\svn\eBusiness\Utils\EnvironmentCreation\JSON\data\capacity-dashboard.json");
         }
 
         [Fact()]

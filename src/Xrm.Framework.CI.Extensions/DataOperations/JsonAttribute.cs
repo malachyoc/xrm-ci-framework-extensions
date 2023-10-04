@@ -54,70 +54,96 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
             switch (attributeType)
             {
                 case "NullValue":
-                    return new JsonAttribute() {
+                    return new JsonAttribute()
+                    {
                         LogicalName = attKvp.Key
-                        , Value = null
+                        ,
+                        Value = null
                     };
 
                 case nameof(String):
-                    return new JsonAttribute() {
+                    return new JsonAttribute()
+                    {
                         LogicalName = attKvp.Key
-                        , Type = nameof(String)
-                        , Value = attKvp.Value
+                        ,
+                        Type = nameof(String)
+                        ,
+                        Value = attKvp.Value
                     };
 
                 case nameof(Boolean):
-                    return  new JsonAttribute() {
+                    return new JsonAttribute()
+                    {
                         LogicalName = attKvp.Key
-                        , Type = nameof(Boolean)
-                        , Value = attKvp.Value
+                        ,
+                        Type = nameof(Boolean)
+                        ,
+                        Value = attKvp.Value
                     };
 
                 case nameof(OptionSetValue):
-                    return new JsonAttribute() {
+                    return new JsonAttribute()
+                    {
                         LogicalName = attKvp.Key
-                        , Type = nameof(OptionSetValue)
-                        , Value = ((OptionSetValue)attKvp.Value).Value
+                        ,
+                        Type = nameof(OptionSetValue)
+                        ,
+                        Value = ((OptionSetValue)attKvp.Value).Value
                     };
 
                 case nameof(Decimal):
-                    return new JsonAttribute() {
+                    return new JsonAttribute()
+                    {
                         LogicalName = attKvp.Key
-                        , Type = nameof(Decimal)
-                        , Value = attKvp.Value
+                        ,
+                        Type = nameof(Decimal)
+                        ,
+                        Value = attKvp.Value
                     };
 
                 case nameof(EntityReference):
-                    return new JsonAttribute() {
+                    return new JsonAttribute()
+                    {
                         LogicalName = attKvp.Key
-                        , Type = nameof(EntityReference)
-                        , Value = new JsonEntityReference() {
+                        ,
+                        Type = nameof(EntityReference)
+                        ,
+                        Value = new JsonEntityReference()
+                        {
                             Id = ((EntityReference)attKvp.Value).Id
-                            , LogicalName = ((EntityReference)attKvp.Value).LogicalName
+                            ,
+                            LogicalName = ((EntityReference)attKvp.Value).LogicalName
                         }
                     };
 
                 case nameof(Int32):
-                    return new JsonAttribute() {
+                    return new JsonAttribute()
+                    {
                         LogicalName = attKvp.Key
-                        , Type = nameof(Int32)
-                        , Value = attKvp.Value
+                        ,
+                        Type = nameof(Int32)
+                        ,
+                        Value = attKvp.Value
                     };
 
                 case nameof(Guid):
                     return new JsonAttribute()
                     {
                         LogicalName = attKvp.Key
-                        , Type = nameof(Guid)
-                        , Value = attKvp.Value
+                        ,
+                        Type = nameof(Guid)
+                        ,
+                        Value = attKvp.Value
                     };
 
                 case nameof(DateTime):
                     return new JsonAttribute()
                     {
                         LogicalName = attKvp.Key
-                        , Type = nameof(DateTime)
-                        , Value = attKvp.Value
+                        ,
+                        Type = nameof(DateTime)
+                        ,
+                        Value = ((DateTime)attKvp.Value).ToUniversalTime()
                     };
 
                 case nameof(BooleanManagedProperty):
@@ -126,8 +152,23 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
                         return new JsonAttribute()
                         {
                             LogicalName = attKvp.Key
-                            , Type = nameof(BooleanManagedProperty)
-                            , Value = property.Value
+                            ,
+                            Type = nameof(BooleanManagedProperty)
+                            ,
+                            Value = property.Value
+                        };
+                    }
+
+                case nameof(Money):
+                    {
+                        var property = (Money)attKvp.Value;
+                        return new JsonAttribute()
+                        {
+                            LogicalName = attKvp.Key
+                            ,
+                            Type = nameof(Money)
+                            ,
+                            Value = property.Value
                         };
                     }
 
@@ -136,4 +177,5 @@ namespace Xrm.Framework.CI.Extensions.DataOperations
             }
         }
     }
+
 }
